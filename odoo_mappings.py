@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------------
-from product import NubeProduct, NubeCategory
+from product import NubeProduct, NubeCategory, NubeVariant
 
 
 class Map(object):
@@ -27,28 +27,39 @@ class Map(object):
 
 
 class MapProduct(Map):
+    """ Mapea un objeto de odoo con uno de nube para pasarle los datos
+
+        - Cuando se quiere pasar un producto sin variantes, no se incluye el
+          campo attributes, y los datos
+          del producto van en la unica variante.
+        - Si se incluyen variantes, en attributes van las dimensiones y en
+          cada variante va en values el valor que esa dimension toma en la
+          variante.
+    """
+
     def __init__(self, product):
         n = NubeProduct()
+        n.id(product.nube_id)
         n.name('es', product.name)
         n.description('es', product.description)
         n.sku(product.default_code)
-        n.seo_description(product.lst_price, 1)
+        #       n.attributes('es','')
+
+        # variants
+        v = NubeVariant()
+        v.price(product.lst_price)
+        v.sku(product.default_code)
+        n.variants(v.get_dict())
+
         self._p = n
 
 
 class MapCategory(Map):
     def __init__(self, category):
         c = NubeCategory()
-        #        c.id(category.nube_id)
+        c.id(category.nube_id)
         c.name('es', category.name)
         c.description('es', category.name)  # TODO agregar descripcion aca!!!
         c.parent(category.parent.nube_id)
         #        c.subcategories([])
         self._p = c
-
-
-{'sku': u'1000-01',
- 'name': {'es': u'Tonalizador Correctivo Beige Amarillento / Beige grisado'},
- 'description': {
-     'es': u'Corrector cremoso. Petaca d\xfao x 4 grs.\nNeutraliza y corrige todo tipo de imperfecciones como ojeras, manchas y secuelas de acn\xe9. Al mismo tiempo es un corrector compacto cremoso de fina textura con alto poder para cubrir pieles con diferentes tipos de discrom\xedas y es una base. <mas>\nPuede utilizarse directo sobre la piel o realizar aplicaciones por sectores, en los casos donde no se requiera el uso de este tipo de producto en todo el rostro. \nEs apto para todo tipo de piel ideal al\xedpidas (secas).\nContiene filtro solar.\nDos variedades de color alcanzan para cubrir gran variedad de tonalidad de pieles.\n01 - Piel clara\n02 - Piel oscura '}
- }

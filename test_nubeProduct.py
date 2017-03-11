@@ -26,12 +26,22 @@ from product import NubeProduct
 class TestNubeProduct(TestCase):
     def test_add(self):
         p = NubeProduct()
-        self.assertEqual(p.get_dict(), {}, 'falla add')
+        self.assertEqual(p.get_dict(), {})
 
     def test_add_id(self):
         p = NubeProduct()
         p.id('123456')
         self.assertDictEqual(p.get_dict(), {'id': '123456'})
+
+    def test_add_id1(self):
+        p = NubeProduct()
+        p.id(0)
+        self.assertDictEqual(p.get_dict(), {})
+
+    def test_add_id2(self):
+        p = NubeProduct()
+        p.id(False)
+        self.assertDictEqual(p.get_dict(), {})
 
     def test_add_name(self):
         p = NubeProduct()

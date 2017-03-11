@@ -29,6 +29,16 @@ class TestNubeCategory(TestCase):
         v.id(123456)
         self.assertDictEqual(v.get_dict(), {'id': 123456})
 
+    def test_id1(self):
+        v = NubeCategory()
+        v.id(0)
+        self.assertDictEqual(v.get_dict(), {})
+
+    def test_id1(self):
+        v = NubeCategory()
+        v.id(False)
+        self.assertDictEqual(v.get_dict(), {})
+
     def test_name(self):
         v = NubeCategory()
         v.name('es', 'este es el nombre ----')
@@ -40,3 +50,43 @@ class TestNubeCategory(TestCase):
         v.description('es', 'esta es la descripción ---- ')
         v.description('es', 'esta es la descripción')
         self.assertDictEqual(v.get_dict(), {'description': {'es': 'esta es la descripción'}})
+
+    def test_handle(self):
+        v = NubeCategory()
+        v.handle('es', 'esta-es-el-handle --------- ')
+        v.handle('es', 'esta-es-el-handle')
+        self.assertDictEqual(v.get_dict(), {'handle': {'es': 'esta-es-el-handle'}})
+
+    def test_parent(self):
+        v = NubeCategory()
+        v.parent(123)
+        self.assertDictEqual(v.get_dict(), {'parent': 123})
+
+    def test_parent1(self):
+        v = NubeCategory()
+        v.parent(0)
+        self.assertDictEqual(v.get_dict(), {'parent': None})
+
+    def test_parent2(self):
+        v = NubeCategory()
+        v.parent(False)
+        self.assertDictEqual(v.get_dict(), {'parent': None})
+
+    def test_subcategories(self):
+        v = NubeCategory()
+        v.subcategories([1, 2, 3])
+        self.assertDictEqual(v.get_dict(), {'subcategories': [1, 2, 3]})
+
+    def test_seo_title(self):
+        v = NubeCategory()
+        v.seo_title('en', 'seo title ------- ')
+        v.seo_title('en', 'seo title')
+        v.seo_title('es', 'seo titulo')
+        self.assertDictEqual(v.get_dict(), {'seo_title': {'es': 'seo titulo', 'en': 'seo title'}})
+
+    def test_seo_description(self):
+        v = NubeCategory()
+        v.seo_description('es', 'seo descripción ---- ')
+        v.seo_description('es', 'seo descripción')
+        v.seo_description('en', 'seo description')
+        self.assertDictEqual(v.get_dict(), {'seo_description': {'es': 'seo descripción', 'en': 'seo description'}})

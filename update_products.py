@@ -19,61 +19,71 @@
 #
 # -----------------------------------------------------------------------------------
 import odoorpc
-from odoo_mappings import MapCategory
-from secret import nube_key, odoo_key
-from tiendanube.client import NubeClient
-
-# conectar con tienda nube
-client = NubeClient(nube_key['api_key'])
-store = client.get_store(nube_key['user_id'])
+from secret import odoo_key
+from tienda_nube_connector import TiendaNubeCat, TiendaNubeProd, TiendaNube
 
 # conectar con odoo
 odoo = odoorpc.ODOO(odoo_key['server'], port=odoo_key['port'])
 odoo.login(odoo_key['database'], odoo_key['username'], odoo_key['password'])
 
-# obtener categorias
-odoo_categ_obj = odoo.env['curso.woo.categ']
-ids = odoo_categ_obj.search([('woo_id', '=', 195)])
-for cat in odoo_categ_obj.browse(ids):
-    m = MapCategory(cat)
-    dic = m.get_dict()
-    print dic
-    print cat.woo_id, cat.woo_ids, cat.name
+CATEG_MILA = [3, 25, 26, 53]
 
-exit()
 
-# obtener producto
-odoo_prod_obj = odoo.env['product.product']
-ids = odoo_prod_obj.search([('default_code', '=', '1000-01')])
-odoo_prod = odoo_prod_obj.browse(ids)
+def list_nube_categs():
+    tn = TiendaNube()
+    for cat in tn.store().categories.list():
+        print cat.name
 
-nube_prod = Odoo2Nube(odoo_prod)
-print nube_prod.get_dict()
 
-# agregar un producto
-"""
-res = store.products.add(
-        {
-            'name': {'es': 'mi producto'},
-            'attributes': [
-                {"es": "Size"},
-            ],
-            'variants': [
-                {
-                    'sku': 'var1',
-                    'values':
-                        [
-                            {'en': 'Grande'}
-                        ]
-                },
-                {
-                    'sku': 'var2',
-                    'values':
-                        [
-                            {'en': 'Chico'}
-                        ]
-                }
-            ]
-        })
-print res
-"""
+def list_nube_products():
+    tn = TiendaNube()
+    for prod in tn.store().products.list():
+        print prod
+
+
+def list_nube_images():
+    tn = TiendaNube()
+    for prod in tn.store().products.list():
+        print prod.images.list()
+
+
+def delete_nube_categs():
+    tn = TiendaNube()
+    for cat in tn.store().categories.list():
+        tn.store().categories.delete({'id': cat['id']})
+
+
+def delete_nube_products():
+    print 'deleting products'
+    tn = TiendaNube()
+    for prod in tn.store().products.list():
+        tn.store().products.delete({'id': prod.id})
+
+
+def update_nube_categs():
+    # obtener categorias
+    tn = TiendaNubeCat()
+    odoo_categ_obj = odoo.env['curso.woo.categ']
+    for level in range(1, 4):
+        print '=== processing level', level
+        ids = odoo_categ_obj.search([('woo_idx', '=', level)])
+        for cat in odoo_categ_obj.browse(ids):
+            tn.update(cat)
+
+
+def update_nube_products():
+    # obtener productos
+    tn = TiendaNubeProd()
+    odoo_prod_obj = odoo.env['product.product']
+    ids = odoo_prod_obj.search([('categ_id', 'in', CATEG_MILA)], limit=10)
+    for pro in odoo_prod_obj.browse(ids):
+        tn.update(pro)
+
+    
+
+
+#update_nube_categs()
+#update_nube_products()
+#delete_nube_products()
+list_nube_products()
+#list_nube_images()

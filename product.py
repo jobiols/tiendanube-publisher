@@ -39,7 +39,8 @@ class NubeCategory(NubeObject):
         super(NubeCategory, self).__init__()
 
     def id(self, value):
-        self._p['id'] = value
+        if value or value != 0:
+            self._p['id'] = value
 
     def name(self, lang, value):
         self._check_dict('name')
@@ -51,19 +52,21 @@ class NubeCategory(NubeObject):
 
     def handle(self, lang, value):
         self._check_dict('handle')
-        self._p['handle'] = value
+        self._p['handle'][lang] = value
 
     def parent(self, value):
-        self._p['parent'] = value
+        self._p['parent'] = value if (value or value != 0) else None
 
     def subcategories(self, value):
         self._p['subcategories'] = value
 
-    def seo_title(self, value):
-        self._p['seo_title'] = value
+    def seo_title(self, lang, value):
+        self._check_dict('seo_title')
+        self._p['seo_title'][lang] = value
 
-    def seo_description(self, value):
-        self._p['seo_description'] = value
+    def seo_description(self, lang, value):
+        self._check_dict('seo_description')
+        self._p['seo_description'][lang] = value
 
 
 class NubeVariant(NubeObject):
@@ -123,7 +126,8 @@ class NubeProduct(NubeObject):
         super(NubeProduct, self).__init__()
 
     def id(self, value):
-        self._p['id'] = value
+        if value or value != 0:
+            self._p['id'] = value
 
     def name(self, lang, value):
         self._check_dict('name')
@@ -160,7 +164,7 @@ class NubeProduct(NubeObject):
 
     def variants(self, value):
         self._check_dict('variants')
-        self._p['variants'] = value
+        self._p['variants'] = [value]
 
     def tags(self, value):
         self._p['tags'] = value
@@ -172,4 +176,6 @@ class NubeProduct(NubeObject):
         self._p['categories'] = value
 
     def sku(self, value):
+        """ Identificador de producto """
+
         self._p['sku'] = value
