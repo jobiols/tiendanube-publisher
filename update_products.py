@@ -38,13 +38,7 @@ def list_nube_categs():
 def list_nube_products():
     tn = TiendaNube()
     for prod in tn.store().products.list():
-        print prod
-
-
-def list_nube_images():
-    tn = TiendaNube()
-    for prod in tn.store().products.list():
-        print prod.images.list()
+        print prod.id, prod.name.es
 
 
 def delete_nube_categs():
@@ -54,10 +48,44 @@ def delete_nube_categs():
 
 
 def delete_nube_products():
-    print 'deleting products'
     tn = TiendaNube()
     for prod in tn.store().products.list():
         tn.store().products.delete({'id': prod.id})
+
+
+def delete_nube_things():
+    delete_nube_categs()
+    delete_nube_products()
+
+
+def update_nube_images():
+    tn = TiendaNubeProd()
+    # buscamos todos los productos que hay en la tienda
+    for prod in tn.store().products.list():
+        # por cada producto que hay traemos el correspondiente en odoo
+        odoo_prod_obj = odoo.env['product.product']
+        ids = odoo_prod_obj.search([('nube_id', '=', prod.id)])
+        # y actualizamos el producto, la foto se actualizará con el mismo, en este loop hay siempre uno...
+        for pro in odoo_prod_obj.browse(ids):
+            tn.update(pro)
+
+
+def update_nube_products():
+    # obtener productos
+    tn = TiendaNubeProd()
+    odoo_prod_obj = odoo.env['product.product']
+    ids = odoo_prod_obj.search([('categ_id', 'in', CATEG_MILA)], limit=1)
+    for pro in odoo_prod_obj.browse(ids):
+        print '>>>', tn.update(pro)
+
+
+def list_nube_images():
+    tn = TiendaNube()
+    for prod in tn.store().products.list():
+        if prod.images:
+            print prod.id
+            for image in prod.images:
+                print image
 
 
 def update_nube_categs():
@@ -71,19 +99,57 @@ def update_nube_categs():
             tn.update(cat)
 
 
-def update_nube_products():
-    # obtener productos
-    tn = TiendaNubeProd()
+def clean_odoo_things():
+    """ Esto limpia todos los nube_id de odoo """
     odoo_prod_obj = odoo.env['product.product']
-    ids = odoo_prod_obj.search([('categ_id', 'in', CATEG_MILA)], limit=10)
-    for pro in odoo_prod_obj.browse(ids):
-        tn.update(pro)
+    ids = odoo_prod_obj.search([('nube_id', '!=', 0)])
+    print ids
+    prods = odoo_prod_obj.browse(ids)
+    for pro in prods:
+        pro.nube_id = 0
 
-    
+    odoo_categ_obj = odoo.env['curso.woo.categ']
+    ids = odoo_categ_obj.search([('nube_id', '!=', 0)])
+    print ids
+    categs = odoo_categ_obj.browse(ids)
+    for cat in categs:
+        cat.nube_id = 0
 
 
-#update_nube_categs()
-#update_nube_products()
-#delete_nube_products()
-list_nube_products()
-#list_nube_images()
+def products_to_update():
+    return [
+        '583/50',
+        '67/100 LIMP/100',
+        'MAND GEL LIMP/50',
+        '73/50',
+        '73/100',
+        'PYTOCELL 40',
+        '8521/50 E',
+        '8521/100 E',
+        '586/50', '586/100',
+        '483/50 SPF 35/50',
+        'RFRM CONT 15',
+        'S/SEBO50',
+
+        'Set MINI',
+        'COMBO OJOS',
+        'SET ESENCIAL',
+
+        'P90',
+        'BROCHA LUSTRE TRADICIONAL',
+        'S11.3',
+        'S22.2',
+        'TK96',
+        'P86',
+        'P84',
+        'P85 TF',
+    ]
+
+
+# update_nube_categs()
+update_nube_products()
+# delete_nube_things()
+# list_nube_products()
+# list_nube_images()
+# update_nube_images()
+# clean_odoo_things()

@@ -164,7 +164,7 @@ class NubeProduct(NubeObject):
 
     def variants(self, value):
         self._check_dict('variants')
-        self._p['variants'] = [value]
+        self._p['variants'] = value
 
     def tags(self, value):
         self._p['tags'] = value
@@ -179,3 +179,17 @@ class NubeProduct(NubeObject):
         """ Identificador de producto """
 
         self._p['sku'] = value
+
+
+class NubeImage(NubeObject):
+    def __init__(self):
+        super(NubeImage, self).__init__()
+
+    def attachment(self, value):
+        self._p['attachment'] = value
+
+    def filename(self, value):
+        self._p['filename'] = value
+
+    def id(self, value):
+        self._p['id'] = value

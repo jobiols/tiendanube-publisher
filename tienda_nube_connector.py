@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------------
-from odoo_mappings import MapCategory, MapProduct
+from odoo_mappings import MapCategory, MapProduct, MapImage
 from secret import nube_key
 from tiendanube.client import NubeClient
 from tiendanube.resources.exceptions import APIError
@@ -37,26 +37,36 @@ class TiendaNube(object):
         # si el objeto odoo tiene ide es modificacion
         if odoo_obj.nube_id:
             try:
-                print '--- updating ', odoo_obj.name
+                print  '--- updating ', odoo_obj.name
                 # actualizo tienda nube
                 return self._do_update(c)
 
             # si no existe es un error, y borro el id de odoo para sincronizar.
             except APIError as error:
-                # TODO Mejorar esto
+                # TODO Mejorar esto y atrapar todos los errores
                 if error.args[0].find('404') > 1:
                     odoo_obj.nube_id = False
                     'print ERROR ----- resetting nube_id'
                     return False
         else:
-            print '--- adding', odoo_obj.name
+            print
+            '--- adding', odoo_obj.name
             # no existe el id en odoo entonces agrego en nube
             res = self._do_add(c)
+
             # me devuelve el id y lo pogo en odoo
             odoo_obj.nube_id = res['id']
 
+        # ya esta el producto en nube sea porque lo agregué o porque lo modifiqué. Le agrego las fotos.
+        # eso solo si odoo tiene imagen y si esta clase es TiendaNubeProd
+        if odoo_obj.image and self.__class__.__name__ == 'TiendaNubeProd':
+            nube_prod = self._store.products.get(odoo_obj.nube_id)
+            image = MapImage(odoo_obj)
+            nube_prod.images.add(image.get_dict())
+
     def delete(self, odoo_obj):
-        print 'deleting', odoo_obj.name
+        print
+        'deleting', odoo_obj.name
         self._do_delete(odoo_obj)
         odoo_obj.nube_id = False
 
@@ -92,8 +102,11 @@ class TiendaNubeProd(TiendaNube):
         return MapProduct(odoo_obj)
 
     def _do_update(self, c):
+        print '11',c.get_dict()
         return self._store.products.update(c.get_dict())
 
     def _do_add(self, c):
         return self._store.products.add(c.get_dict())
+
+
 

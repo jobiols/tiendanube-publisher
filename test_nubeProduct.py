@@ -97,7 +97,7 @@ class TestNubeProduct(TestCase):
 
     def test_add_variants(self):
         p = NubeProduct()
-        p.variants([{}, {}])
+        p.variants([{},{}])
         self.assertDictEqual(p.get_dict(), {'variants': [{}, {}]})
 
     def test_add_tags(self):
@@ -112,5 +112,5 @@ class TestNubeProduct(TestCase):
 
     def test_add_categories(self):
         p = NubeProduct()
-        p.categories([{}])
-        self.assertDictEqual(p.get_dict(), {'categories': [{}]})
+        p.categories([123456])
+        self.assertDictEqual(p.get_dict(), {'categories': [123456]})

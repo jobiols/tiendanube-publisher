@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # -----------------------------------------------------------------------------------
-from product import NubeProduct, NubeCategory, NubeVariant
+from product import NubeProduct, NubeCategory, NubeVariant, NubeImage
 
 
 class Map(object):
@@ -37,20 +37,24 @@ class MapProduct(Map):
           variante.
     """
 
-    def __init__(self, product):
+    def __init__(self, odoo_product):
         n = NubeProduct()
-        n.id(product.nube_id)
-        n.name('es', product.name)
-        n.description('es', product.description)
-        n.sku(product.default_code)
+        n.id(odoo_product.nube_id)
+        n.name('es', odoo_product.name)
+        n.description('es', odoo_product.description)
+        n.sku(odoo_product.default_code)
+        n.categories([odoo_product.woo_categ.nube_id])
+#        n.categories([])
+
+        # los atributos son solo para las variantes
         #       n.attributes('es','')
 
-        # variants
+        # siempre va al menos una variante
         v = NubeVariant()
-        v.price(product.lst_price)
-        v.sku(product.default_code)
-        n.variants(v.get_dict())
-
+        v.price(odoo_product.lst_price)
+        v.sku(odoo_product.default_code)
+        n.variants([v.get_dict()])
+        print n.get_dict()
         self._p = n
 
 
@@ -62,4 +66,13 @@ class MapCategory(Map):
         c.description('es', category.name)  # TODO agregar descripcion aca!!!
         c.parent(category.parent.nube_id)
         #        c.subcategories([])
+        self._p = c
+
+
+class MapImage(Map):
+    def __init__(self, odoo_obj):
+        c = NubeImage()
+        c.id(odoo_obj.nube_id)
+        c.filename(str(odoo_obj.id) + '.jpg')
+        c.attachment(odoo_obj.image)
         self._p = c
