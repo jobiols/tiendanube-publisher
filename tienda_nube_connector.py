@@ -44,13 +44,13 @@ class TiendaNube(object):
             # si no existe es un error, y borro el id de odoo para sincronizar.
             except APIError as error:
                 # TODO Mejorar esto y atrapar todos los errores
+                print error[0]
                 if error.args[0].find('404') > 1:
                     odoo_obj.nube_id = False
                     'print ERROR ----- resetting nube_id'
                     return False
         else:
-            print
-            '--- adding', odoo_obj.name
+            print '--- adding', odoo_obj.name
             # no existe el id en odoo entonces agrego en nube
             res = self._do_add(c)
 
@@ -63,10 +63,10 @@ class TiendaNube(object):
             nube_prod = self._store.products.get(odoo_obj.nube_id)
             image = MapImage(odoo_obj)
             nube_prod.images.add(image.get_dict())
+            # TODO hay que registrar el id en odoo para no poner la foto varias veces.
 
     def delete(self, odoo_obj):
-        print
-        'deleting', odoo_obj.name
+        print 'deleting', odoo_obj.name
         self._do_delete(odoo_obj)
         odoo_obj.nube_id = False
 
@@ -102,10 +102,11 @@ class TiendaNubeProd(TiendaNube):
         return MapProduct(odoo_obj)
 
     def _do_update(self, c):
-        print '11',c.get_dict()
+        print 'update >', c.get_dict()
         return self._store.products.update(c.get_dict())
 
     def _do_add(self, c):
+        print 'add    >', c.get_dict()
         return self._store.products.add(c.get_dict())
 
 

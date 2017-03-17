@@ -70,13 +70,15 @@ def update_nube_images():
             tn.update(pro)
 
 
-def update_nube_products():
+def products_odoo2nube(prods_to_update):
     # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
-    ids = odoo_prod_obj.search([('categ_id', 'in', CATEG_MILA)], limit=1)
-    for pro in odoo_prod_obj.browse(ids):
-        print '>>>', tn.update(pro)
+    for default_code in prods_to_update:
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        for pro in odoo_prod_obj.browse(ids):
+            if pro.lst_price >0:
+                print '>>>', tn.update(pro)
 
 
 def list_nube_images():
@@ -99,7 +101,7 @@ def update_nube_categs():
             tn.update(cat)
 
 
-def clean_odoo_things():
+def clean_odoo_prods():
     """ Esto limpia todos los nube_id de odoo """
     odoo_prod_obj = odoo.env['product.product']
     ids = odoo_prod_obj.search([('nube_id', '!=', 0)])
@@ -108,12 +110,19 @@ def clean_odoo_things():
     for pro in prods:
         pro.nube_id = 0
 
+
+def clean_odoo_categs():
     odoo_categ_obj = odoo.env['curso.woo.categ']
     ids = odoo_categ_obj.search([('nube_id', '!=', 0)])
     print ids
     categs = odoo_categ_obj.browse(ids)
     for cat in categs:
         cat.nube_id = 0
+
+
+def clean_odoo_things():
+    clean_odoo_prods()
+    clean_odoo_categs()
 
 
 def products_to_update():
@@ -126,7 +135,8 @@ def products_to_update():
         'PYTOCELL 40',
         '8521/50 E',
         '8521/100 E',
-        '586/50', '586/100',
+        '586/50',
+        '586/100',
         '483/50 SPF 35/50',
         'RFRM CONT 15',
         'S/SEBO50',
@@ -143,13 +153,18 @@ def products_to_update():
         'P86',
         'P84',
         'P85 TF',
+
+
+        'G01',
     ]
 
 
+products_odoo2nube(products_to_update())
+# delete_nube_categs()
 # update_nube_categs()
-update_nube_products()
 # delete_nube_things()
+#delete_nube_products()
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
-# clean_odoo_things()
+# clean_odoo_prods()
