@@ -19,41 +19,47 @@
 #
 # -----------------------------------------------------------------------------------
 from product import NubeProduct, NubeCategory, NubeVariant, NubeImage
+import json
 
 
 class Map(object):
     def get_dict(self):
         return self._p.get_dict()
 
+    def get_formatted_dict(self):
+        return json.dumps(self._p.get_dict(), sort_keys=True, indent=4)
+
 
 class MapProduct(Map):
-    """ Mapea un objeto de odoo con uno de nube para pasarle los datos
+    """ Mapea un producto de odoo con uno de nube para pasarle los datos
 
         - Cuando se quiere pasar un producto sin variantes, no se incluye el
-          campo attributes, y los datos
-          del producto van en la unica variante.
+          campo attributes, y los datos del producto van en la unica variante.
         - Si se incluyen variantes, en attributes van las dimensiones y en
           cada variante va en values el valor que esa dimension toma en la
           variante.
+        - Sin embargo cuando se hace update no va ninguna variante, ni la unica.
     """
 
     def __init__(self, odoo_product):
         n = NubeProduct()
-        n.id(odoo_product.nube_id)
         n.name('es', odoo_product.name)
         n.description('es', odoo_product.description)
         n.sku(odoo_product.default_code)
         n.categories([odoo_product.woo_categ.nube_id])
 
         # los atributos son solo para las variantes
-        #       n.attributes('es','')
+        # n.attributes('es','')
 
-        # siempre va al menos una variante
-        v = NubeVariant()
-        v.price(odoo_product.lst_price)
-        v.sku(odoo_product.default_code)
-        n.variants([v.get_dict()])
-        print n.get_dict()
+        # si estoy haciendo add pongo la variante y no el id
+        if not odoo_product.nube_id:
+            v = NubeVariant()
+            v.price(odoo_product.public_price)
+            v.sku(odoo_product.default_code)
+            n.variants([v.get_dict()])
+        else:
+            n.id(odoo_product.nube_id)
+
         self._p = n
 
 

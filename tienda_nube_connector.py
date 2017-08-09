@@ -102,11 +102,11 @@ class TiendaNubeProd(TiendaNube):
         return MapProduct(odoo_obj)
 
     def _do_update(self, c):
-        print 'update >', c.get_dict()
+        print 'update >', c.get_formatted_dict()
         return self._store.products.update(c.get_dict())
 
     def _do_add(self, c):
-        print 'add    >', c.get_dict()
+        print 'add    >', c.get_formatted_dict()
         return self._store.products.add(c.get_dict())
 
 

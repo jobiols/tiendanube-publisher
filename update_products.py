@@ -77,8 +77,8 @@ def products_odoo2nube(prods_to_update):
     for default_code in prods_to_update:
         ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for pro in odoo_prod_obj.browse(ids):
-            if pro.lst_price >0:
-                print '>>>', tn.update(pro)
+            if pro.lst_price > 0:
+                tn.update(pro)
 
 
 def list_nube_images():
@@ -125,6 +125,19 @@ def clean_odoo_things():
     clean_odoo_categs()
 
 
+def calculate_pricelist_price(id_prod, id_pricelist):
+    return odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[str(id_pricelist)]
+
+
+def list_odoo_prods(prods_to_list):
+    # obtener productos
+    odoo_prod_obj = odoo.env['product.product']
+    for default_code in prods_to_list:
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        for pro in odoo_prod_obj.browse(ids):
+            print pro.default_code
+
+
 def products_to_update():
     return [
         '583/50',
@@ -154,7 +167,6 @@ def products_to_update():
         'P84',
         'P85 TF',
 
-
         'G01',
     ]
 
@@ -167,4 +179,5 @@ products_odoo2nube(products_to_update())
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
-# clean_odoo_prods()
+#clean_odoo_prods()
+# list_odoo_prods(['P84'])
