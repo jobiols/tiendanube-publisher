@@ -171,13 +171,31 @@ def products_to_update():
     ]
 
 
-products_odoo2nube(products_to_update())
+def odoo_published():
+    """ Devuelve los productos que se pueden publicar
+    """
+    ret = []
+    odoo_prod_obj = odoo.env['product.product']
+    ids = odoo_prod_obj.search([
+        ('published', '=', True),
+        ('description_short_wc', 'like', 'OK'),
+        ('woo_categ', '!=', False),
+        ('description', '!=', False)
+    ])
+
+    for pro in odoo_prod_obj.browse(ids):
+        ret.append(pro.default_code)
+    return ret
+
+
+products_odoo2nube(odoo_published())
 # delete_nube_categs()
 # update_nube_categs()
 # delete_nube_things()
-#delete_nube_products()
+# delete_nube_products()
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
 #clean_odoo_prods()
-# list_odoo_prods(['P84'])
+#list_odoo_prods(['P84'])
+#print odoo_published()
