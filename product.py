@@ -142,8 +142,8 @@ class NubeProduct(NubeObject):
         self._p['handle'][lang] = value
 
     def attributes(self, lang, value):
-        self._check_dict('attributes')
-        self._p['attributes'][lang] = value
+        self._check_list('attributes')
+        self._p['attributes'].append({lang: value})
 
     def published(self, value):
         self._p['published'] = 'true' if value else 'false'
