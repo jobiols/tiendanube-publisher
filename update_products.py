@@ -37,23 +37,32 @@ def list_nube_categs():
 
 def list_nube_products():
     tn = TiendaNube()
+    a = len(tn.store().products.list())
+    print 'cantidad de productos', a
     for prod in tn.store().products.list():
         print prod.id, prod.name.es
 
 
 def delete_nube_categs():
     tn = TiendaNube()
-    for cat in tn.store().categories.list():
-        tn.store().categories.delete({'id': cat['id']})
+    cant = 1
+    while cant > 0:
+        for cat in tn.store().categories.list():
+            tn.store().categories.delete({'id': cat['id']})
+        cant = len(tn.store().categories.list())
 
 
 def delete_nube_products():
     tn = TiendaNube()
-    for prod in tn.store().products.list():
-        tn.store().products.delete({'id': prod.id})
+    cant = 1
+    while cant > 0:
+        for prod in tn.store().products.list():
+            tn.store().products.delete({'id': prod.id})
+        cant = len(tn.store().products.list())
 
 
 def delete_nube_things():
+    print 'deleting nube things'
     delete_nube_categs()
     delete_nube_products()
 
@@ -71,6 +80,7 @@ def update_nube_images():
 
 
 def products_odoo2nube(prods_to_update):
+    print 'products -> nube'
     # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
@@ -91,6 +101,8 @@ def list_nube_images():
 
 
 def update_nube_categs():
+    """ Subir las categorias a tienda nube
+    """
     # obtener categorias
     tn = TiendaNubeCat()
     odoo_categ_obj = odoo.env['curso.woo.categ']
@@ -112,6 +124,7 @@ def clean_odoo_prods():
 
 
 def clean_odoo_categs():
+    """ borrar las referencias de odoo para las categorias """
     odoo_categ_obj = odoo.env['curso.woo.categ']
     ids = odoo_categ_obj.search([('nube_id', '!=', 0)])
     print ids
@@ -121,6 +134,8 @@ def clean_odoo_categs():
 
 
 def clean_odoo_things():
+    """ borrar las referencias de odoo para cargar todo de nuevo """
+    print 'clean odoo things'
     clean_odoo_prods()
     clean_odoo_categs()
 
@@ -133,69 +148,71 @@ def list_odoo_prods(prods_to_list):
     # obtener productos
     odoo_prod_obj = odoo.env['product.product']
     for default_code in prods_to_list:
-        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        ids = odoo_prod_obj.search([('default_code', 'like', default_code)])
         for pro in odoo_prod_obj.browse(ids):
-            print pro.default_code
-
-
-def products_to_update():
-    return [
-        '583/50',
-        '67/100 LIMP/100',
-        'MAND GEL LIMP/50',
-        '73/50',
-        '73/100',
-        'PYTOCELL 40',
-        '8521/50 E',
-        '8521/100 E',
-        '586/50',
-        '586/100',
-        '483/50 SPF 35/50',
-        'RFRM CONT 15',
-        'S/SEBO50',
-
-        'Set MINI',
-        'COMBO OJOS',
-        'SET ESENCIAL',
-
-        'P90',
-        'BROCHA LUSTRE TRADICIONAL',
-        'S11.3',
-        'S22.2',
-        'TK96',
-        'P86',
-        'P84',
-        'P85 TF',
-
-        'G01',
-    ]
+            print pro.default_code, pro.name
 
 
 def odoo_published():
     """ Devuelve los productos que se pueden publicar
     """
+    print 'buscando productos en odoo para publicar'
     ret = []
     odoo_prod_obj = odoo.env['product.product']
     ids = odoo_prod_obj.search([
         ('published', '=', True),
         ('description_short_wc', 'like', 'OK'),
         ('woo_categ', '!=', False),
-        ('description', '!=', False)
+        ('description', '!=', False),
+        ('state', '=', 'sellable')
     ])
 
     for pro in odoo_prod_obj.browse(ids):
+        print '>', pro.default_code
         ret.append(pro.default_code)
+    print 'total productos', len(ids)
     return ret
 
 
+def delete_empty_categs(selected_prods):
+    # obtener las categorias usadas
+    used_categ_ids = []
+    odoo_prod_obj = odoo.env['product.product']
+    for default_code in selected_prods:
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        for pro in odoo_prod_obj.browse(ids):
+            used_categ_ids += [pro.woo_categ]
+
+    # obtener todas las categorias en nube
+    odoo_categ_obj = odoo.env['curso.woo.categ']
+    all_categ_ids = odoo_categ_obj.search([('nube_id', '!=', 0)])
+
+    # obtener las que hay que borrar
+    to_delete = set(used_categ_ids) ^ set(all_categ_ids)
+
+    tn = TiendaNubeCat()
+    for id_cat in to_delete:
+        tn.store().categories.delete({'id': id_cat})
+
+
+# estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
+#delete_nube_things()
+#clean_odoo_things()
+
+# sube todas las categorias a nube va antes de los productos
+#update_nube_categs()
+
+# sube todos los productos a nube
 products_odoo2nube(odoo_published())
-# delete_nube_categs()
-# update_nube_categs()
-# delete_nube_things()
-# delete_nube_products()
+
+# elimina las categorias que no tienen productos
+# delete_empty_categs(odoo_published())
+
+# products_odoo2nube(['1002-02'])
+
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
-#clean_odoo_prods()
-#list_odoo_prods(['P84'])
+# clean_odoo_prods()
+# list_odoo_prods(['1002-02'])
 #print odoo_published()

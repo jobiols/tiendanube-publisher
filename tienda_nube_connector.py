@@ -106,7 +106,9 @@ class TiendaNubeProd(TiendaNube):
         return self._store.products.update(c.get_dict())
 
     def _do_add(self, c):
-        print 'add    >', c.get_formatted_dict()
+        print 'adding start > -------------------'
+        print c.get_formatted_dict()
+        print 'adding end   > -------------------'
         return self._store.products.add(c.get_dict())
 
 
