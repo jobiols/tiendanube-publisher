@@ -43,8 +43,8 @@ class MapProduct(Map):
 
     def __init__(self, odoo_product):
         n = NubeProduct()
-        n.name('es', odoo_product.name)
         n.name('es', odoo_product.default_code + ' ' + odoo_product.name)
+        n.description('es', odoo_product.description)
         n.sku(odoo_product.default_code)
         n.categories([odoo_product.woo_categ.nube_id])
 
