@@ -52,15 +52,6 @@ def delete_nube_categs():
         cant = len(tn.store().categories.list())
 
 
-def delete_nube_products():
-    tn = TiendaNube()
-    cant = 1
-    while cant > 0:
-        for prod in tn.store().products.list():
-            tn.store().products.delete({'id': prod.id})
-        cant = len(tn.store().products.list())
-
-
 def delete_nube_things():
     print 'deleting nube things'
     delete_nube_categs()
@@ -77,6 +68,23 @@ def update_nube_images():
         # y actualizamos el producto, la foto se actualizará con el mismo, en este loop hay siempre uno...
         for pro in odoo_prod_obj.browse(ids):
             tn.update(pro)
+
+
+def delete_nube_products(prods_to_delete='all'):
+    tn = TiendaNube()
+    if prods_to_delete == 'all':
+        cant = 1
+        while cant > 0:
+            for prod in tn.store().products.list():
+                tn.store().products.delete({'id': prod.id})
+            cant = len(tn.store().products.list())
+        return
+
+    odoo_prod_obj = odoo.env['product.product']
+    for default_code in prods_to_delete:
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        for prod in odoo_prod_obj.browse(ids):
+            tn.store().products.delete({'id': prod.id})
 
 
 def products_odoo2nube(prods_to_update):
@@ -178,10 +186,16 @@ def delete_empty_categs(selected_prods):
     # obtener las categorias usadas
     used_categ_ids = []
     odoo_prod_obj = odoo.env['product.product']
+    nro = len(selected_prods)
     for default_code in selected_prods:
         ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for pro in odoo_prod_obj.browse(ids):
-            used_categ_ids += [pro.woo_categ]
+            print 'producto ', nro, pro.default_code
+            nro -= 1
+            if pro.woo_categ not in used_categ_ids:
+                used_categ_ids += [pro.woo_categ]
+
+    print 'categorias usadas', len(used_categ_ids), used_categ_ids
 
     # obtener todas las categorias en nube
     odoo_categ_obj = odoo.env['curso.woo.categ']
@@ -190,23 +204,25 @@ def delete_empty_categs(selected_prods):
     # obtener las que hay que borrar
     to_delete = set(used_categ_ids) ^ set(all_categ_ids)
 
+    print 'categs a borrar', len(to_delete)
     tn = TiendaNubeCat()
     for id_cat in to_delete:
+        print 'borrando', id_cat
         tn.store().categories.delete({'id': id_cat})
 
 
 # estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
-#delete_nube_things()
-#clean_odoo_things()
+# delete_nube_things()
+# clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
-#update_nube_categs()
+# update_nube_categs()
 
-# sube todos los productos a nube
+# sube / actualiza todos los productos a nube
 products_odoo2nube(odoo_published())
 
-# elimina las categorias que no tienen productos
-# delete_empty_categs(odoo_published())
+# elimina las categorias que no tienen productos NO ANDA
+#delete_empty_categs(odoo_published())
 
 # products_odoo2nube(['1002-02'])
 
@@ -215,4 +231,4 @@ products_odoo2nube(odoo_published())
 # update_nube_images()
 # clean_odoo_prods()
 # list_odoo_prods(['1002-02'])
-#print odoo_published()
+# print odoo_published()
