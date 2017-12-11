@@ -36,6 +36,7 @@ def list_nube_categs():
 
 
 def list_nube_products():
+    """ Pretende listar los productos pero lista solo la primera pagina """
     tn = TiendaNube()
     a = len(tn.store().products.list())
     print 'cantidad de productos', a
@@ -71,6 +72,8 @@ def update_nube_images():
 
 
 def delete_nube_products(prods_to_delete='all'):
+    """ Elimina un producto de tiendanube, o todos si no le paso parametros
+    """
     tn = TiendaNube()
     if prods_to_delete == 'all':
         cant = 1
@@ -220,14 +223,17 @@ def delete_empty_categs(selected_prods):
 
 # sube / actualiza todos los productos a nube
 #products_odoo2nube(odoo_published())
-products_odoo2nube(['1000-01'])
+products_odoo2nube(['1610-01'])
+#delete_nube_products(['1610-01'])
+
+
 
 # elimina las categorias que no tienen productos NO ANDA
 #delete_empty_categs(odoo_published())
 
 # products_odoo2nube(['1002-02'])
 
-# list_nube_products()
+#list_nube_products()
 # list_nube_images()
 # update_nube_images()
 # clean_odoo_prods()
