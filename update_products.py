@@ -223,8 +223,7 @@ def delete_empty_categs(selected_prods):
 
 # sube / actualiza todos los productos a nube
 #products_odoo2nube(odoo_published())
-products_odoo2nube(['1610-01'])
-#delete_nube_products(['1610-01'])
+
 
 
 
@@ -237,5 +236,9 @@ products_odoo2nube(['1610-01'])
 # list_nube_images()
 # update_nube_images()
 # clean_odoo_prods()
-# list_odoo_prods(['1002-02'])
+# list_odoo_prods(['1003-02'])
 # print odoo_published()
+
+
+#products_odoo2nube(['1003P'])
+delete_nube_products(['1003P'])
