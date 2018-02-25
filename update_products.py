@@ -240,5 +240,5 @@ def delete_empty_categs(selected_prods):
 # print odoo_published()
 
 
-#products_odoo2nube(['1003P'])
-delete_nube_products(['1003P'])
+#products_odoo2nube(['1000-01'])
+delete_nube_products(['1000-01'])
