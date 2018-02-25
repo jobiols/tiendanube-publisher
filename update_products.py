@@ -87,7 +87,13 @@ def delete_nube_products(prods_to_delete='all'):
     for default_code in prods_to_delete:
         ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for prod in odoo_prod_obj.browse(ids):
-            tn.store().products.delete({'id': prod.id})
+            # asegurar que si falla el delete en odoo se borra igual
+            nube_id = prod.nube_id
+            prod.nube_id = False
+            try:
+                tn.store().products.delete({'id': nube_id})
+            except:
+                print 'falla borrar en la nube'
 
 
 def products_odoo2nube(prods_to_update):
@@ -238,7 +244,6 @@ def delete_empty_categs(selected_prods):
 # clean_odoo_prods()
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
-
 
 #products_odoo2nube(['1000-01'])
 delete_nube_products(['1000-01'])

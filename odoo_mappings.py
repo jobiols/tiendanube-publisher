@@ -32,13 +32,6 @@ class Map(object):
 
 class MapProduct(Map):
     """ Mapea un producto de odoo con uno de nube para pasarle los datos
-
-        - Cuando se quiere pasar un producto sin variantes, no se incluye el
-          campo attributes, y los datos del producto van en la unica variante.
-        - Si se incluyen variantes, en attributes van las dimensiones y en
-          cada variante va en values el valor que esa dimension toma en la
-          variante.
-        - Sin embargo cuando se hace update no va ninguna variante, ni la unica.
     """
 
     def __init__(self, odoo_product):
