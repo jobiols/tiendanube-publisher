@@ -32,7 +32,7 @@ class TiendaNube(object):
 
     def update(self, odoo_obj):
         # mapeo el objeto odoo a objeto nube
-        c = self._create_map(odoo_obj)
+        c = MapProduct(odoo_obj)
 
         # si el objeto odoo tiene ide es modificacion
         if odoo_obj.nube_id:
@@ -54,16 +54,15 @@ class TiendaNube(object):
             # no existe el id en odoo entonces agrego en nube
             res = self._do_add(c)
 
-            # me devuelve el id y lo pogo en odoo
+            # agrego la foto solo si lo estoy agregando, en modifi no
+            if self.__class__.__name__ == 'TiendaNubeProd' and odoo_obj.image:
+                nube_prod = self._store.products.get(res['id'])
+                image = MapImage(odoo_obj)
+                nube_prod.images.add(image.get_dict())
+
+            # pongo el id en odoo
             odoo_obj.nube_id = res['id']
 
-        # ya esta el producto en nube sea porque lo agregué o porque lo modifiqué. Le agrego las fotos.
-        # eso solo si odoo tiene imagen y si esta clase es TiendaNubeProd
-        if odoo_obj.image and self.__class__.__name__ == 'TiendaNubeProd':
-            nube_prod = self._store.products.get(odoo_obj.nube_id)
-            image = MapImage(odoo_obj)
-            nube_prod.images.add(image.get_dict())
-            # TODO hay que registrar el id en odoo para no poner la foto varias veces.
 
     def delete(self, odoo_obj):
         print 'deleting', odoo_obj.name
@@ -97,9 +96,6 @@ class TiendaNubeProd(TiendaNube):
 
     def _do_delete(self, odoo_obj):
         return self._store.products.delete({'id': odoo_obj.nube_id})
-
-    def _create_map(self, odoo_obj):
-        return MapProduct(odoo_obj)
 
     def _do_update(self, c):
         print 'update >', c.get_formatted_dict()

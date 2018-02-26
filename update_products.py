@@ -104,8 +104,7 @@ def products_odoo2nube(prods_to_update):
     for default_code in prods_to_update:
         ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for pro in odoo_prod_obj.browse(ids):
-            if pro.lst_price > 0:
-                tn.update(pro)
+            tn.update(pro)
 
 
 def list_nube_images():
@@ -134,9 +133,9 @@ def clean_odoo_prods():
     """ Esto limpia todos los nube_id de odoo """
     odoo_prod_obj = odoo.env['product.product']
     ids = odoo_prod_obj.search([('nube_id', '!=', 0)])
-    print ids
     prods = odoo_prod_obj.browse(ids)
     for pro in prods:
+        print pro.default_code
         pro.nube_id = 0
 
 
@@ -221,7 +220,7 @@ def delete_empty_categs(selected_prods):
 
 
 # estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
-# delete_nube_things()
+#delete_nube_things()
 # clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
@@ -245,5 +244,5 @@ def delete_empty_categs(selected_prods):
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-#products_odoo2nube(['1000-01'])
-delete_nube_products(['1000-01'])
+products_odoo2nube(odoo_published())
+#delete_nube_products(['1014'])

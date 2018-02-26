@@ -41,17 +41,22 @@ class MapProduct(Map):
         n.sku(odoo_product.default_code)
         n.categories([odoo_product.woo_categ.nube_id])
 
-        # los atributos son solo para las variantes
-        # n.attributes('es','')
-
-        # si estoy haciendo add pongo la variante y no el id
-        if not odoo_product.nube_id:
+        # si estoy haciendo actualizacion pongo el id
+        if odoo_product.nube_id:
+            n.id(odoo_product.nube_id)
+        else:
             v = NubeVariant()
             v.price(odoo_product.public_price)
             v.sku(odoo_product.default_code)
+            if False:
+                v.promotional_price(10)
+            v.position(1)
+            v.stock_management(False)
+            if False:
+                v.stock(10)
+            v.weight(odoo_product.weight)
+
             n.variants([v.get_dict()])
-        else:
-            n.id(odoo_product.nube_id)
 
         self._p = n
 
