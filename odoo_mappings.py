@@ -33,7 +33,6 @@ class Map(object):
 class MapProduct(Map):
     """ Mapea un producto de odoo con uno de nube para pasarle los datos
     """
-
     def __init__(self, odoo_product):
         n = NubeProduct()
         n.name('es', odoo_product.default_code + ' ' + odoo_product.name)
@@ -45,20 +44,28 @@ class MapProduct(Map):
         if odoo_product.nube_id:
             n.id(odoo_product.nube_id)
         else:
-            v = NubeVariant()
-            v.price(odoo_product.public_price)
-            v.sku(odoo_product.default_code)
-            if False:
-                v.promotional_price(10)
-            v.position(1)
-            v.stock_management(False)
-            if False:
-                v.stock(10)
-            v.weight(odoo_product.weight)
-
-            n.variants([v.get_dict()])
-
+            c = MapVariant(odoo_product)
+            n.variants([c.get_dict()])
         self._p = n
+
+
+class MapVariant(Map):
+    """ Mapea un producto odoo con una variante de un producto nube
+    """
+
+    def __init__(self, odoo_obj, variant_id=False):
+        c = NubeVariant()
+        if variant_id:
+            c.variant_id(variant_id)
+#        c.product_id(odoo_obj.nube_id)
+        c.price(odoo_obj.lst_price)
+        c.sku(odoo_obj.default_code)
+
+#        c.values('es', odoo_obj.default_code)
+        c.stock_management(False)
+        c.weight(odoo_obj.weight)
+        self._p = c
+
 
 
 class MapCategory(Map):
@@ -78,3 +85,4 @@ class MapImage(Map):
         c.filename(str(odoo_obj.id) + '.jpg')
         c.attachment(odoo_obj.image)
         self._p = c
+

@@ -73,7 +73,7 @@ class NubeVariant(NubeObject):
     def __init__(self):
         super(NubeVariant, self).__init__()
 
-    def id_variant(self, value):
+    def variant_id(self, value):
         self._p['id'] = value
 
     def image_id(self, value):

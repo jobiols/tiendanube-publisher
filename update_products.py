@@ -74,7 +74,8 @@ def update_nube_images():
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
     """
-    tn = TiendaNube()
+    tn = TiendaNubeProd()
+    # borrar todos los productos de la tienda
     if prods_to_delete == 'all':
         cant = 1
         while cant > 0:
@@ -83,21 +84,15 @@ def delete_nube_products(prods_to_delete='all'):
             cant = len(tn.store().products.list())
         return
 
+    # borrar una lista de productos de la tienda
     odoo_prod_obj = odoo.env['product.product']
     for default_code in prods_to_delete:
         ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for prod in odoo_prod_obj.browse(ids):
-            # asegurar que si falla el delete en odoo se borra igual
-            nube_id = prod.nube_id
-            prod.nube_id = False
-            try:
-                tn.store().products.delete({'id': nube_id})
-            except:
-                print 'falla borrar en la nube'
+            tn.delete(prod)
 
 
 def products_odoo2nube(prods_to_update):
-    print 'products -> nube'
     # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
@@ -244,5 +239,6 @@ def delete_empty_categs(selected_prods):
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-products_odoo2nube(odoo_published())
-#delete_nube_products(['1014'])
+#delete_nube_products(['2811P-06'])
+products_odoo2nube(['2811P-06'])
+
