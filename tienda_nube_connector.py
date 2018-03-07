@@ -22,7 +22,6 @@ from odoo_mappings import MapCategory, MapProduct, MapImage, MapVariant
 from secret import nube_key
 from tiendanube.client import NubeClient
 from tiendanube.resources.exceptions import APIError
-from product import NubeVariant
 
 
 class TiendaNube(object):
@@ -111,7 +110,8 @@ class TiendaNubeProd(TiendaNube):
 
     def _do_delete(self, odoo_obj):
         if odoo_obj.nube_id:
-            print 'delete product {}, id={}'.format(odoo_obj.default_code,odoo_obj.nube_id)
+            print 'delete product {}, id={}'.format(
+                    odoo_obj.default_code, odoo_obj.nube_id)
             dict = {'id': odoo_obj.nube_id}
             odoo_obj.nube_id = False
             print '-------------------'
@@ -155,5 +155,3 @@ class TiendaNubeProd(TiendaNube):
             nube_prod = self._store.products.get(nube_prod.id)
             image = MapImage(odoo_obj)
             nube_prod.images.add(image.get_dict())
-
-

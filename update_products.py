@@ -238,6 +238,7 @@ def delete_empty_categs(selected_prods):
 
 # elimina las categorias que no tienen productos NO ANDA
 # delete_empty_categs(odoo_published())
+#set_weight(odoo_published(), 0.1)
 
 # products_odoo2nube(['1002-02'])
 
@@ -248,6 +249,5 @@ def delete_empty_categs(selected_prods):
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-# delete_nube_products(['2811P-06'])
-# products_odoo2nube()
-set_weight(odoo_published(), 0.1)
+#delete_nube_products(['2011P-S02'])
+products_odoo2nube(['2011P-S02'])
