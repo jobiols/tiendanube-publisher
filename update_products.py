@@ -92,6 +92,15 @@ def delete_nube_products(prods_to_delete='all'):
             tn.delete(prod)
 
 
+def set_weight(prods_to_update, weight):
+    odoo_prod_obj = odoo.env['product.product']
+    for default_code in prods_to_update:
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
+        for pro in odoo_prod_obj.browse(ids):
+            print 'setting weight', pro.default_code, '>', weight
+            pro.weight = weight
+
+
 def products_odoo2nube(prods_to_update):
     # obtener productos
     tn = TiendaNubeProd()
@@ -167,12 +176,12 @@ def list_odoo_prods(prods_to_list):
 def odoo_published():
     """ Devuelve los productos que se pueden publicar
     """
+    # TODO agregar el write_date
     print 'buscando productos en odoo para publicar'
     ret = []
     odoo_prod_obj = odoo.env['product.product']
     ids = odoo_prod_obj.search([
         ('published', '=', True),
-        ('description_short_wc', 'like', 'OK'),
         ('woo_categ', '!=', False),
         ('description', '!=', False),
         ('state', '=', 'sellable')
@@ -215,30 +224,30 @@ def delete_empty_categs(selected_prods):
 
 
 # estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
-#delete_nube_things()
+# delete_nube_things()
 # clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
 # update_nube_categs()
 
 # sube / actualiza todos los productos a nube
-#products_odoo2nube(odoo_published())
+# products_odoo2nube(odoo_published())
 
 
 
 
 # elimina las categorias que no tienen productos NO ANDA
-#delete_empty_categs(odoo_published())
+# delete_empty_categs(odoo_published())
 
 # products_odoo2nube(['1002-02'])
 
-#list_nube_products()
+# list_nube_products()
 # list_nube_images()
 # update_nube_images()
 # clean_odoo_prods()
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-#delete_nube_products(['2811P-06'])
-products_odoo2nube(['2811P-06'])
-
+# delete_nube_products(['2811P-06'])
+# products_odoo2nube()
+set_weight(odoo_published(), 0.1)
