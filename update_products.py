@@ -145,7 +145,6 @@ def clean_odoo_prods():
         pro.nube_id = 0
 
 
-
 def delete_nube_categs():
     """ puede que ande pero da errores
     """
@@ -177,8 +176,8 @@ def clean_odoo_things():
 
 def calculate_pricelist_price(id_prod, id_pricelist):
     return \
-    odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[
-        str(id_pricelist)]
+        odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[
+            str(id_pricelist)]
 
 
 def list_odoo_prods(prods_to_list):
@@ -190,22 +189,27 @@ def list_odoo_prods(prods_to_list):
             print pro.default_code, pro.name
 
 
-def odoo_published():
-    """ Devuelve los productos que se pueden publicar
+def odoo_published(from_date=False):
+    """ Devuelve los productos que se pueden publicar y que fueron modificaos
+        despues de from_date o todos si es False
     """
     # TODO agregar el write_date
     print 'buscando productos en odoo para publicar'
     ret = []
     odoo_prod_obj = odoo.env['product.product']
-    ids = odoo_prod_obj.search([
+    domain = [
         ('published', '=', True),
         ('woo_categ', '!=', False),
         ('description', '!=', False),
-        ('state', '=', 'sellable')
-    ])
+        ('state', '=', 'sellable')]
+
+    if from_date:
+        domain += [('write_date', '>', from_date)]
+
+    ids = odoo_prod_obj.search(domain)
 
     for pro in odoo_prod_obj.browse(ids):
-        print '>', pro.default_code
+        print '> {:10}{}'.format(pro.default_code, pro.write_date)
         ret.append(pro.default_code)
     print 'total productos', len(ids)
     return ret
@@ -266,5 +270,6 @@ def delete_empty_categs(selected_prods):
 # delete_nube_products(['2011P-S02'])
 # products_odoo2nube(['2011P-S02'])
 
-products_odoo2nube(odoo_published())
+# products_odoo2nube(['PLUMA NATURAL'])
 
+odoo_published('2018-03-11 01:53:37')
