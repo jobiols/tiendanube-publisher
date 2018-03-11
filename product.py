@@ -135,7 +135,8 @@ class NubeProduct(NubeObject):
 
     def description(self, lang, value):
         self._check_dict('description')
-        self._p['description'][lang] = value
+        self._p['description'][lang] = u'<div align="justify">' \
+                                       u'{}</div>'.format(value)
 
     def handle(self, lang, value):
         self._check_dict('handle')

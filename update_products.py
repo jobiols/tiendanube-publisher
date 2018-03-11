@@ -270,6 +270,6 @@ def delete_empty_categs(selected_prods):
 # delete_nube_products(['2011P-S02'])
 # products_odoo2nube(['2011P-S02'])
 
-# products_odoo2nube(['PLUMA NATURAL'])
+products_odoo2nube(['1000-01'])
 
-odoo_published('2018-03-11 01:53:37')
+#odoo_published('2018-03-11 01:53:37')
