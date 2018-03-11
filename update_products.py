@@ -44,15 +44,6 @@ def list_nube_products():
         print prod.id, prod.name.es
 
 
-def delete_nube_categs():
-    tn = TiendaNube()
-    cant = 1
-    while cant > 0:
-        for cat in tn.store().categories.list():
-            tn.store().categories.delete({'id': cat['id']})
-        cant = len(tn.store().categories.list())
-
-
 def delete_nube_things():
     print 'deleting nube things'
     delete_nube_categs()
@@ -120,6 +111,15 @@ def list_nube_images():
                 print image
 
 
+def list_odoo_categs():
+    odoo_categ_obj = odoo.env['curso.woo.categ']
+    for level in range(1, 4):
+        print '=== processing level', level
+        ids = odoo_categ_obj.search([('woo_idx', '=', level)])
+        for cat in odoo_categ_obj.browse(ids):
+            print cat.name
+
+
 def update_nube_categs():
     """ Subir las categorias a tienda nube
     """
@@ -128,9 +128,11 @@ def update_nube_categs():
     odoo_categ_obj = odoo.env['curso.woo.categ']
     for level in range(1, 4):
         print '=== processing level', level
-        ids = odoo_categ_obj.search([('woo_idx', '=', level)])
-        for cat in odoo_categ_obj.browse(ids):
-            tn.update(cat)
+        ids = odoo_categ_obj.search([('woo_idx', '=', level),
+                                     ('published', '!=', False)])
+        for odoo_cat in odoo_categ_obj.browse(ids):
+            print odoo_cat.name
+            tn.update(odoo_cat)
 
 
 def clean_odoo_prods():
@@ -143,6 +145,18 @@ def clean_odoo_prods():
         pro.nube_id = 0
 
 
+
+def delete_nube_categs():
+    """ puede que ande pero da errores
+    """
+    tn = TiendaNube()
+    cant = 1
+    while cant > 0:
+        for cat in tn.store().categories.list():
+            tn.store().categories.delete({'id': cat.id})
+        cant = len(tn.store().categories.list())
+
+
 def clean_odoo_categs():
     """ borrar las referencias de odoo para las categorias """
     odoo_categ_obj = odoo.env['curso.woo.categ']
@@ -150,6 +164,7 @@ def clean_odoo_categs():
     print ids
     categs = odoo_categ_obj.browse(ids)
     for cat in categs:
+        print cat.name
         cat.nube_id = 0
 
 
@@ -161,7 +176,9 @@ def clean_odoo_things():
 
 
 def calculate_pricelist_price(id_prod, id_pricelist):
-    return odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[str(id_pricelist)]
+    return \
+    odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[
+        str(id_pricelist)]
 
 
 def list_odoo_prods(prods_to_list):
@@ -222,7 +239,6 @@ def delete_empty_categs(selected_prods):
         print 'borrando', id_cat
         tn.store().categories.delete({'id': id_cat})
 
-
 # estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
 # delete_nube_things()
 # clean_odoo_things()
@@ -233,21 +249,22 @@ def delete_empty_categs(selected_prods):
 # sube / actualiza todos los productos a nube
 # products_odoo2nube(odoo_published())
 
-
-
-
 # elimina las categorias que no tienen productos NO ANDA
 # delete_empty_categs(odoo_published())
-#set_weight(odoo_published(), 0.1)
+# set_weight(odoo_published(), 0.1)
 
-# products_odoo2nube(['1002-02'])
+# products_odoo2nube(odoo_published())
 
 # list_nube_products()
+# list_nube_categs()
 # list_nube_images()
 # update_nube_images()
 # clean_odoo_prods()
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-#delete_nube_products(['2011P-S02'])
-products_odoo2nube(['2011P-S02'])
+# delete_nube_products(['2011P-S02'])
+# products_odoo2nube(['2011P-S02'])
+
+products_odoo2nube(odoo_published())
+

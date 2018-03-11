@@ -42,66 +42,28 @@ class TiendaNube(object):
             self._do_add(odoo_obj)
         return
 
-        # mapeo el objeto odoo a objeto nube
-        c = MapProduct(odoo_obj)
-
-        # si el objeto odoo tiene ide es modificacion
-        if odoo_obj.nube_id:
-            try:
-                print '--- updating ', odoo_obj.name
-                # actualizo tienda nube
-                res = self._do_update(c)
-
-                # si es una modificacion modifico la variante
-                nube_prod = self._store.products.get(res['id'])
-                variant = MapVariant(odoo_obj)
-                print '---------------'
-                print variant.get_formatted_dict()
-                print '---------------'
-                res = nube_prod.variants.add(variant.get_dict())
-
-
-            # si no existe es un error, y borro el id de odoo para sincronizar.
-            except APIError as error:
-                # TODO Mejorar esto y atrapar todos los errores
-                print error[0]
-                if error.args[0].find('404') > 1:
-                    odoo_obj.nube_id = False
-                    'print ERROR ----- resetting nube_id'
-                    return False
-        else:
-            print '--- adding', odoo_obj.name
-            # no existe el id en odoo entonces agrego en nube
-            res = self._do_add(c)
-
-            # agrego la foto solo si lo estoy agregando, en modifi no
-            if self.__class__.__name__ == 'TiendaNubeProd' and odoo_obj.image:
-                nube_prod = self._store.products.get(res['id'])
-                image = MapImage(odoo_obj)
-                nube_prod.images.add(image.get_dict())
-
-            # pongo el id en odoo
-            odoo_obj.nube_id = res['id']
-
     def delete(self, odoo_obj):
         self._do_delete(odoo_obj)
+
+    def store(self):
+        return self._store
 
 
 class TiendaNubeCat(TiendaNube):
     def __init__(self):
         super(TiendaNubeCat, self).__init__()
 
-    def _do_delete(self, odoo_obj):
-        return self._store.categories.delete({'id': odoo_obj.nube_id})
+    def _do_delete(self, odoo_cat):
+        return self._store.categories.delete({'id': odoo_cat.nube_id})
 
-    def _create_map(self, odoo_obj):
-        return MapCategory(odoo_obj)
-
-    def _do_update(self, c):
+    def _do_update(self, Odoo_cat):
+        c = MapCategory(Odoo_cat)
         return self._store.categories.update(c.get_dict())
 
-    def _do_add(self, c):
-        return self._store.categories.add(c.get_dict())
+    def _do_add(self, odoo_cat):
+        c = MapCategory(odoo_cat)
+        ret = self._store.categories.add(c.get_dict())
+        odoo_cat.nube_id = ret.id
 
 
 class TiendaNubeProd(TiendaNube):
