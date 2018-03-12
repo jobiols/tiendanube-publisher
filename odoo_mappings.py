@@ -59,8 +59,7 @@ class MapVariant(Map):
             c.variant_id(variant_id)
         c.price(odoo_obj.lst_price)
         c.sku(odoo_obj.default_code)
-        if odoo_obj.promotional_price:
-            c.promotional_price(odoo_obj.promotional_price)
+        c.promotional_price(odoo_obj.promotional_price)
         c.stock_management(False)
         c.weight(odoo_obj.weight)
         self._p = c
