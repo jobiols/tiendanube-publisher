@@ -270,8 +270,9 @@ def delete_empty_categs(selected_prods):
 #delete_nube_products(['2050P'])
 # products_odoo2nube(['2011P-S02'])
 
-#products_odoo2nube(odoo_published())
 
-#odoo_published('2018-03-11 01:53:37')
 
-odoo_published()
+
+# ultima publicacion
+products_odoo2nube(odoo_published('2018-03-12 12:10:00'))
+
