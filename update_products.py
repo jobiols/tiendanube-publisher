@@ -209,7 +209,7 @@ def odoo_published(from_date=False):
     ids = odoo_prod_obj.search(domain)
 
     for pro in odoo_prod_obj.browse(ids):
-        print '> {:10}{}'.format(pro.default_code, pro.write_date)
+        print u'> {:15}{}'.format(pro.default_code, pro.write_date)
         ret.append(pro.default_code)
     print 'total productos', len(ids)
     return ret
@@ -267,9 +267,11 @@ def delete_empty_categs(selected_prods):
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-# delete_nube_products(['2011P-S02'])
+#delete_nube_products(['2050P'])
 # products_odoo2nube(['2011P-S02'])
 
-products_odoo2nube(['1000-01'])
+#products_odoo2nube(odoo_published())
 
 #odoo_published('2018-03-11 01:53:37')
+
+odoo_published()

@@ -105,15 +105,15 @@ class TiendaNubeProd(TiendaNube):
 
         # agregar el producto
         c = MapProduct(odoo_obj)
-        print '-------- adding product {}'.format(odoo_obj.default_code)
+        print u'-------- adding product {}'.format(odoo_obj.default_code)
         print c.get_formatted_dict()
-        print '--------'
+        print u'--------'
         nube_prod = self._store.products.add(c.get_dict())
         odoo_obj.nube_id = nube_prod.id
 
         # agregar la foto, si es que la tiene el objeto
         if odoo_obj.image:
-            print '------ adding photo '
+            print u'------ adding photo '
             nube_prod = self._store.products.get(nube_prod.id)
             image = MapImage(odoo_obj)
             nube_prod.images.add(image.get_dict())
