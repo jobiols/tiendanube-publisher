@@ -184,7 +184,7 @@ def list_odoo_prods(prods_to_list):
     # obtener productos
     odoo_prod_obj = odoo.env['product.product']
     for default_code in prods_to_list:
-        ids = odoo_prod_obj.search([('default_code', 'like', default_code)])
+        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
         for pro in odoo_prod_obj.browse(ids):
             print pro.default_code, pro.name
 
@@ -243,6 +243,7 @@ def delete_empty_categs(selected_prods):
         print 'borrando', id_cat
         tn.store().categories.delete({'id': id_cat})
 
+
 # estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
 # delete_nube_things()
 # clean_odoo_things()
@@ -267,12 +268,24 @@ def delete_empty_categs(selected_prods):
 # list_odoo_prods(['1003-02'])
 # print odoo_published()
 
-#delete_nube_products(['2050P'])
 # products_odoo2nube(['2011P-S02'])
 
 
+fotos = ['A68', 'B49', 'B63', 'B64', 'C22', 'C24', 'D12', 'SET CLASICO',
+         'SET DIVA', 'SET ESTRELLA']
+fotos1 = [
+    'Esencial',
+    'PROFESSIONAL BRAND',
+    'Mini Automaquillaje',
+    'FANTASTICO',
+    'CLASICO',
+    'DIVA',
+    'ESTRELLA'
+]
+#list_odoo_prods(fotos1)
+#delete_nube_products(fotos1)
+products_odoo2nube(fotos1)
 
 
 # ultima publicacion
-products_odoo2nube(odoo_published('2018-03-12 12:10:00'))
-
+# products_odoo2nube(odoo_published('2018-03-12 12:10:00'))
