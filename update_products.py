@@ -209,7 +209,7 @@ def odoo_published(from_date=False):
     ids = odoo_prod_obj.search(domain)
 
     for pro in odoo_prod_obj.browse(ids):
-        print u'> {:15}{}'.format(pro.default_code, pro.write_date)
+        print u'> {:35}{}'.format(pro.default_code, pro.write_date)
         ret.append(pro.default_code)
     print 'total productos', len(ids)
     return ret
@@ -271,21 +271,17 @@ def delete_empty_categs(selected_prods):
 # products_odoo2nube(['2011P-S02'])
 
 
-fotos = ['A68', 'B49', 'B63', 'B64', 'C22', 'C24', 'D12', 'SET CLASICO',
-         'SET DIVA', 'SET ESTRELLA']
-fotos1 = [
-    'Esencial',
-    'PROFESSIONAL BRAND',
-    'Mini Automaquillaje',
-    'FANTASTICO',
-    'CLASICO',
-    'DIVA',
-    'ESTRELLA'
-]
+#fotos = ['ESPONJA', 'C23', 'C22']
+
 #list_odoo_prods(fotos1)
-#delete_nube_products(fotos1)
-products_odoo2nube(fotos1)
+#delete_nube_products()
+
+#products_odoo2nube(fotos1)
 
 
 # ultima publicacion
-# products_odoo2nube(odoo_published('2018-03-12 12:10:00'))
+#products_odoo2nube()
+
+odoo_published('2018-04-10 01:24:13')
+
+

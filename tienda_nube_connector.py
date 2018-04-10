@@ -43,6 +43,7 @@ class TiendaNube(object):
         return
 
     def delete(self, odoo_obj):
+        print '>>',odoo_obj.default_code
         self._do_delete(odoo_obj)
 
     def store(self):
@@ -72,16 +73,20 @@ class TiendaNubeProd(TiendaNube):
 
     def _do_delete(self, odoo_obj):
         if odoo_obj.nube_id:
-            print 'delete product {}, id={}'.format(
+            print u'delete product {}, id={}'.format(
                     odoo_obj.default_code, odoo_obj.nube_id)
             dict = {'id': odoo_obj.nube_id}
             odoo_obj.nube_id = False
             print '-------------------'
             print dict
             print '-------------------'
-            return self._store.products.delete(dict)
+            try:
+                return self._store.products.delete(dict)
+            except:
+                print 'object {} not in tienda'.format(dict)
+                return
         else:
-            print 'objet {} not in nube'.format(odoo_obj.default_code)
+            print u'objet {} not in nube'.format(odoo_obj.default_code)
 
     def _do_update(self, odoo_obj):
         """ Actualiza un producto de odoo a tienda nube
