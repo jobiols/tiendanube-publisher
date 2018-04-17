@@ -206,7 +206,7 @@ def odoo_published(from_date=False):
     if from_date:
         domain += [('write_date', '>', from_date)]
 
-    ids = odoo_prod_obj.search(domain)
+    ids = odoo_prod_obj.search(domain, order='write_date')
 
     for pro in odoo_prod_obj.browse(ids):
         print u'> {:35}{}'.format(pro.default_code, pro.write_date)
@@ -282,6 +282,7 @@ def delete_empty_categs(selected_prods):
 # ultima publicacion
 #products_odoo2nube()
 
-odoo_published('2018-04-10 01:24:13')
+odoo_published('2018-04-17 12:10:14')
+
 
 
