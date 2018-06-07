@@ -57,7 +57,7 @@ class MapVariant(Map):
         c = NubeVariant()
         if variant_id:
             c.variant_id(variant_id)
-        c.price(odoo_obj.lst_price)
+        c.price(odoo_obj.public_price)
         c.sku(odoo_obj.default_code)
         c.promotional_price(odoo_obj.promotional_price)
         c.stock_management(False)

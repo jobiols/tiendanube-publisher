@@ -189,7 +189,7 @@ def list_odoo_prods(prods_to_list):
             print pro.default_code, pro.name
 
 
-def odoo_published(from_date=False):
+def odoo_published(from_date=False, categs=[]):
     """ Devuelve los productos que se pueden publicar y que fueron modificaos
         despues de from_date o todos si es False
     """
@@ -201,7 +201,11 @@ def odoo_published(from_date=False):
         ('published', '=', True),
         ('woo_categ', '!=', False),
         ('description', '!=', False),
-        ('state', '=', 'sellable')]
+        ('state', '=', 'sellable')
+    ]
+
+    if categs:
+        domain += ('categ_id', 'in', categs)
 
     if from_date:
         domain += [('write_date', '>', from_date)]
@@ -270,19 +274,18 @@ def delete_empty_categs(selected_prods):
 
 # products_odoo2nube(['2011P-S02'])
 
+# fotos = ['ESPONJA', 'C23', 'C22']
 
-#fotos = ['ESPONJA', 'C23', 'C22']
+# list_odoo_prods(fotos1)
+# delete_nube_products()
 
-#list_odoo_prods(fotos1)
-#delete_nube_products()
-
-#products_odoo2nube(fotos1)
+# products_odoo2nube(fotos1)
 
 
 # ultima publicacion
-#products_odoo2nube()
 
-odoo_published('2018-04-17 12:10:14')
+#products_odoo2nube(odoo_published(categs=[3, 25, 26, 53]))
 
+#products_odoo2nube(odoo_published('2018-06-04 07:00:00'))
 
-
+#ultima subida --> odoo_published('2018-06-06 21:00:00')

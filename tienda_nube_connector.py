@@ -43,7 +43,7 @@ class TiendaNube(object):
         return
 
     def delete(self, odoo_obj):
-        print '>>',odoo_obj.default_code
+        print '>>', odoo_obj.default_code
         self._do_delete(odoo_obj)
 
     def store(self):
