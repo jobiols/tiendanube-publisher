@@ -31,13 +31,15 @@ class TiendaNube(object):
         self._store = client.get_store(nube_key['user_id'])
 
     def update(self, odoo_obj):
-        """ Actualiza o crea un objeto en tienda nube basado en un objeto odoo, es un objeto generico
-            puede ser producto o categoria
+        """ Actualiza o crea un objeto en tienda nube basado en un objeto odoo,
+            es un objeto generico, puede ser producto o categoria
         """
         if odoo_obj.nube_id:
             # tengo el id en odoo, es una modificacion
+            print 'update'
             self._do_update(odoo_obj)
         else:
+            print 'add'
             # no tengo el id en odoo, es un alta
             self._do_add(odoo_obj)
         return

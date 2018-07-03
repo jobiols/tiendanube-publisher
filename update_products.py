@@ -32,7 +32,7 @@ CATEG_MILA = [3, 25, 26, 53]
 def list_nube_categs():
     tn = TiendaNube()
     for cat in tn.store().categories.list():
-        print cat.name
+        print cat.parent, cat.name
 
 
 def list_nube_products():
@@ -121,7 +121,8 @@ def list_odoo_categs():
 
 
 def update_nube_categs():
-    """ Subir las categorias a tienda nube
+    """ Subir las categorias a tienda nube, agrega las nuevas y actualiza
+        las viejas
     """
     # obtener categorias
     tn = TiendaNubeCat()
@@ -253,7 +254,7 @@ def delete_empty_categs(selected_prods):
 # clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
-# update_nube_categs()
+#update_nube_categs()
 
 # sube / actualiza todos los productos a nube
 # products_odoo2nube(odoo_published())
@@ -265,7 +266,6 @@ def delete_empty_categs(selected_prods):
 # products_odoo2nube(odoo_published())
 
 # list_nube_products()
-# list_nube_categs()
 # list_nube_images()
 # update_nube_images()
 # clean_odoo_prods()
@@ -286,6 +286,8 @@ def delete_empty_categs(selected_prods):
 
 #products_odoo2nube(odoo_published(categs=[3, 25, 26, 53]))
 
-#products_odoo2nube(odoo_published('2018-06-04 07:00:00'))
+products_odoo2nube(odoo_published('2018-06-28 06:00:00'))
 
-#ultima subida --> odoo_published('2018-06-06 21:00:00')
+
+
+
