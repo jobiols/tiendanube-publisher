@@ -96,9 +96,8 @@ def products_odoo2nube(prods_to_update):
     # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
-    for default_code in prods_to_update:
-        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
-        for pro in odoo_prod_obj.browse(ids):
+    for id in prods_to_update:
+        for pro in odoo_prod_obj.browse(id):
             tn.update(pro)
 
 
@@ -214,8 +213,8 @@ def odoo_published(from_date=False, categs=[]):
     ids = odoo_prod_obj.search(domain, order='write_date')
 
     for pro in odoo_prod_obj.browse(ids):
-        print u'> {:35}{}'.format(pro.default_code, pro.write_date)
-        ret.append(pro.default_code)
+        print u'> {:10} {} {}'.format(pro.id, pro.write_date, pro.name)
+        ret.append(pro.id)
     print 'total productos', len(ids)
     return ret
 
@@ -284,10 +283,6 @@ def delete_empty_categs(selected_prods):
 
 # ultima publicacion
 
-#products_odoo2nube(odoo_published(categs=[3, 25, 26, 53]))
-
-products_odoo2nube(odoo_published('2018-06-28 06:00:00'))
-
-
+products_odoo2nube(odoo_published('2018-07-04 20:31:52'))
 
 
