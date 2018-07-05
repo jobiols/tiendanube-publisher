@@ -135,6 +135,15 @@ def update_nube_categs():
             tn.update(odoo_cat)
 
 
+def clean_odoo_prod(ids):
+    """ Esto limpia los nube_id de los productos listados """
+    odoo_prod_obj = odoo.env['product.product']
+    prods = odoo_prod_obj.browse(ids)
+    for pro in prods:
+        print 'limpiando ', pro.name
+        pro.nube_id = 0
+
+
 def clean_odoo_prods():
     """ Esto limpia todos los nube_id de odoo """
     odoo_prod_obj = odoo.env['product.product']
@@ -183,10 +192,9 @@ def calculate_pricelist_price(id_prod, id_pricelist):
 def list_odoo_prods(prods_to_list):
     # obtener productos
     odoo_prod_obj = odoo.env['product.product']
-    for default_code in prods_to_list:
-        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
-        for pro in odoo_prod_obj.browse(ids):
-            print pro.default_code, pro.name
+    for id in prods_to_list:
+        for pro in odoo_prod_obj.browse(id):
+            print pro.id, pro.name
 
 
 def odoo_published(from_date=False, categs=[]):
@@ -267,8 +275,8 @@ def delete_empty_categs(selected_prods):
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
-# clean_odoo_prods()
-# list_odoo_prods(['1003-02'])
+#clean_odoo_prod([4349])
+#list_odoo_prods([4349])
 # print odoo_published()
 
 # products_odoo2nube(['2011P-S02'])
@@ -283,6 +291,4 @@ def delete_empty_categs(selected_prods):
 
 # ultima publicacion
 
-products_odoo2nube(odoo_published('2018-07-04 20:31:52'))
-
-
+products_odoo2nube(odoo_published('2018-07-05 03:10:02'))
