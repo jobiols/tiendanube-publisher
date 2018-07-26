@@ -106,6 +106,13 @@ class TiendaNubeProd(TiendaNube):
         nube_prod = self._store.products.get(ret.id)
         nube_prod.variants.update(c.get_dict())
 
+        # agregar la foto, si es que la tiene el objeto
+        if odoo_obj.image:
+            print u'------ adding photo '
+            image = MapImage(odoo_obj)
+            nube_prod.images.add(image.get_dict())
+
+
     def _do_add(self, odoo_obj):
         """ agrega un producto a tienda nube que no existe dado un producto odoo
         """

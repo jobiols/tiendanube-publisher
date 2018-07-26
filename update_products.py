@@ -197,7 +197,7 @@ def list_odoo_prods(prods_to_list):
             print pro.id, pro.name
 
 
-def odoo_published(from_date=False, categs=[]):
+def odoo_published(from_date=False, categs=[], mask=False):
     """ Devuelve los productos que se pueden publicar y que fueron modificaos
         despues de from_date o todos si es False
     """
@@ -217,6 +217,9 @@ def odoo_published(from_date=False, categs=[]):
 
     if from_date:
         domain += [('write_date', '>', from_date)]
+
+    if mask:
+        domain += [('default_code', 'like', mask)]
 
     ids = odoo_prod_obj.search(domain, order='write_date')
 
@@ -261,7 +264,7 @@ def delete_empty_categs(selected_prods):
 # clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
-#update_nube_categs()
+# update_nube_categs()
 
 # sube / actualiza todos los productos a nube
 # products_odoo2nube(odoo_published())
@@ -275,8 +278,8 @@ def delete_empty_categs(selected_prods):
 # list_nube_products()
 # list_nube_images()
 # update_nube_images()
-#clean_odoo_prod([4349])
-#list_odoo_prods([4349])
+# clean_odoo_prod([4349])
+# list_odoo_prods([4349])
 # print odoo_published()
 
 # products_odoo2nube(['2011P-S02'])
@@ -291,4 +294,9 @@ def delete_empty_categs(selected_prods):
 
 # ultima publicacion
 
-products_odoo2nube(odoo_published('2018-07-05 03:10:02'))
+#products_odoo2nube(odoo_published('2018-07-05 03:10:02'))
+
+#products_odoo2nube(odoo_published(mask='1110%'))
+
+products_odoo2nube(odoo_published(mask='1110-134'))
+
