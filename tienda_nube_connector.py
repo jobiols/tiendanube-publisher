@@ -37,7 +37,7 @@ class TiendaNube(object):
         if odoo_obj.nube_id:
             # tengo el id en odoo, es una modificacion
             print 'update'
-            self._do_update(odoo_obj)
+            #self._do_update(odoo_obj)
         else:
             print 'add'
             # no tengo el id en odoo, es un alta
@@ -106,12 +106,12 @@ class TiendaNubeProd(TiendaNube):
         nube_prod = self._store.products.get(ret.id)
         nube_prod.variants.update(c.get_dict())
 
+        # NO QUEREMOS AGREGAR FOTOS EN UPDATE
         # agregar la foto, si es que la tiene el objeto
-        if odoo_obj.image:
-            print u'------ adding photo '
-            image = MapImage(odoo_obj)
-            nube_prod.images.add(image.get_dict())
-
+        #if odoo_obj.image:
+        #    print u'------ adding photo '
+        #    image = MapImage(odoo_obj)
+        #    nube_prod.images.add(image.get_dict())
 
     def _do_add(self, odoo_obj):
         """ agrega un producto a tienda nube que no existe dado un producto odoo

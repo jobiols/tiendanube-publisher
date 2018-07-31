@@ -50,18 +50,6 @@ def delete_nube_things():
     delete_nube_products()
 
 
-def update_nube_images():
-    tn = TiendaNubeProd()
-    # buscamos todos los productos que hay en la tienda
-    for prod in tn.store().products.list():
-        # por cada producto que hay traemos el correspondiente en odoo
-        odoo_prod_obj = odoo.env['product.product']
-        ids = odoo_prod_obj.search([('nube_id', '=', prod.id)])
-        # y actualizamos el producto, la foto se actualizará con el mismo, en este loop hay siempre uno...
-        for pro in odoo_prod_obj.browse(ids):
-            tn.update(pro)
-
-
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
     """
@@ -264,7 +252,7 @@ def delete_empty_categs(selected_prods):
 # clean_odoo_things()
 
 # sube todas las categorias a nube va antes de los productos
-# update_nube_categs()
+#update_nube_categs()
 
 # sube / actualiza todos los productos a nube
 # products_odoo2nube(odoo_published())
@@ -277,10 +265,6 @@ def delete_empty_categs(selected_prods):
 
 # list_nube_products()
 # list_nube_images()
-# update_nube_images()
-# clean_odoo_prod([4349])
-# list_odoo_prods([4349])
-# print odoo_published()
 
 # products_odoo2nube(['2011P-S02'])
 
@@ -297,6 +281,4 @@ def delete_empty_categs(selected_prods):
 #products_odoo2nube(odoo_published('2018-07-05 03:10:02'))
 
 #products_odoo2nube(odoo_published(mask='1110%'))
-
-products_odoo2nube(odoo_published(mask='1110-134'))
 
