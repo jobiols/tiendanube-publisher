@@ -37,7 +37,7 @@ class TiendaNube(object):
         if odoo_obj.nube_id:
             # tengo el id en odoo, es una modificacion
             print 'update'
-            #self._do_update(odoo_obj)
+            self._do_update(odoo_obj)
         else:
             print 'add'
             # no tengo el id en odoo, es un alta
@@ -94,15 +94,15 @@ class TiendaNubeProd(TiendaNube):
         """ Actualiza un producto de odoo a tienda nube
         """
         c = MapProduct(odoo_obj)
-        print '-------- update product {}'.format(odoo_obj.default_code)
+        print u'-------- update product {}'.format(odoo_obj.default_code)
         print c.get_formatted_dict()
-        print '--------'
+        print u'--------'
         ret = self._store.products.update(c.get_dict())
 
         c = MapVariant(odoo_obj, variant_id=ret.variants[0].id)
-        print '-------- update product {}'.format(odoo_obj.default_code)
+        print u'-------- update product {}'.format(odoo_obj.default_code)
         print c.get_formatted_dict()
-        print '--------'
+        print u'--------'
         nube_prod = self._store.products.get(ret.id)
         nube_prod.variants.update(c.get_dict())
 

@@ -44,12 +44,6 @@ def list_nube_products():
         print prod.id, prod.name.es
 
 
-def delete_nube_things():
-    print 'deleting nube things'
-    delete_nube_categs()
-    delete_nube_products()
-
-
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
     """
@@ -81,12 +75,26 @@ def set_weight(prods_to_update, weight):
 
 
 def products_odoo2nube(prods_to_update):
+    """ Esto actualiza los productos de la tienda desde odoo
+    """
     # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
-    for id in prods_to_update:
-        for pro in odoo_prod_obj.browse(id):
-            tn.update(pro)
+    count = len(prods_to_update)
+    for pro in odoo_prod_obj.browse(prods_to_update):
+        tn.update(pro)
+        count -=1
+        print 'quedan ', count
+
+
+def clean_odoo_prod(prods_to_update, nube_id=0):
+    """ Esto limpia los nube_id de los productos listados o el pone un nube_id
+    """
+    odoo_prod_obj = odoo.env['product.product']
+    prods = odoo_prod_obj.browse(prods_to_update)
+    for pro in prods:
+        print 'limpiando ', pro.default_code, pro.name
+        pro.nube_id = nube_id
 
 
 def list_nube_images():
@@ -121,25 +129,6 @@ def update_nube_categs():
         for odoo_cat in odoo_categ_obj.browse(ids):
             print odoo_cat.name
             tn.update(odoo_cat)
-
-
-def clean_odoo_prod(ids):
-    """ Esto limpia los nube_id de los productos listados """
-    odoo_prod_obj = odoo.env['product.product']
-    prods = odoo_prod_obj.browse(ids)
-    for pro in prods:
-        print 'limpiando ', pro.name
-        pro.nube_id = 0
-
-
-def clean_odoo_prods():
-    """ Esto limpia todos los nube_id de odoo """
-    odoo_prod_obj = odoo.env['product.product']
-    ids = odoo_prod_obj.search([('nube_id', '!=', 0)])
-    prods = odoo_prod_obj.browse(ids)
-    for pro in prods:
-        print pro.default_code
-        pro.nube_id = 0
 
 
 def delete_nube_categs():
@@ -247,10 +236,6 @@ def delete_empty_categs(selected_prods):
         tn.store().categories.delete({'id': id_cat})
 
 
-# estos dos borran las cosas en nube y limpian las cosas en odoo, para empezar de cero
-# delete_nube_things()
-# clean_odoo_things()
-
 # sube todas las categorias a nube va antes de los productos
 #update_nube_categs()
 
@@ -278,7 +263,14 @@ def delete_empty_categs(selected_prods):
 
 # ultima publicacion
 
-#products_odoo2nube(odoo_published('2018-07-05 03:10:02'))
+# esto limpia el id_nube de odoo, o si se le pone un id se lo actualiza, lo
+# usamos cuando se desincroniza el id entre ambos
+# clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
-#products_odoo2nube(odoo_published(mask='1110%'))
+# next upload from this date
+# odoo_published('2018-08-06 06:54:35')
 
+
+#products_odoo2nube(odoo_published('2018-08-06 04:17:48'))
+
+odoo_published('2018-08-06 06:50:35')
