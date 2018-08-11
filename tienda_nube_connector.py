@@ -79,6 +79,7 @@ class TiendaNubeProd(TiendaNube):
                     odoo_obj.default_code, odoo_obj.nube_id)
             dict = {'id': odoo_obj.nube_id}
             odoo_obj.nube_id = False
+            odoo_obj.published = False
             print '-------------------'
             print dict
             print '-------------------'

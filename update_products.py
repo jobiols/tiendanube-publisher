@@ -29,20 +29,70 @@ odoo.login(odoo_key['database'], odoo_key['username'], odoo_key['password'])
 CATEG_MILA = [3, 25, 26, 53]
 
 
+def odoo_published(from_date=False, categs=[], mask=False):
+    """ Devuelve los productos que se pueden procesar y que fueron modificaos
+        despues de from_date o todos si es False o las categorias o mascara.
+    """
+
+    print 'buscando productos en odoo'
+    ret = []
+    odoo_prod_obj = odoo.env['product.product']
+    domain = [
+        ('published', '=', True),
+        ('woo_categ', '!=', False),
+        ('description', '!=', False),
+        ('state', '=', 'sellable')
+    ]
+
+    if categs:
+        domain += ('categ_id', 'in', categs)
+
+    if from_date:
+        domain += [('write_date', '>', from_date)]
+
+    if mask:
+        domain += [('default_code', 'like', mask)]
+
+    ids = odoo_prod_obj.search(domain, order='write_date')
+
+    for pro in odoo_prod_obj.browse(ids):
+        print u'> {:7} [{}] {} {}'.format(pro.id, pro.write_date, pro.default_code, pro.name)
+        ret.append(pro.id)
+    print 'total productos', len(ids)
+    return ret
+
+
 def list_nube_categs():
+    """ Lista las categorias que hay en tienda nube
+    """
     tn = TiendaNube()
     for cat in tn.store().categories.list():
-        print cat.parent, cat.name
+        print u'[{}] [{:7}] {} {}'.format(cat.id, cat.parent, cat.name.es,
+                                          cat.subcategories)
 
 
 def list_nube_products():
-    """ Pretende listar los productos pero lista solo la primera pagina """
+    """ Lista todos los productos de la tienda, aunque medio trucho porque
+        no puedo saber cuantos productos hay en total.
+        Seria bueno saber eso, lo explica tienda nube en
+        https://github.com/TiendaNube/api-docs#pagination
+    """
     tn = TiendaNube()
-    a = len(tn.store().products.list())
-    print 'cantidad de productos', a
-    for prod in tn.store().products.list():
-        print prod.id, prod.name.es
+    page = 1
+    ret = []
+    while True:
+        prods = tn.store().products.list(
+            filters={'per_page': 200, 'page': page},
+            fields='id,name')
+        page += 1
 
+        for prod in prods:
+            ret.append(prod.id)
+            print prod.id, prod.name.es
+
+        if len(prods) < 200:
+            break
+    return ret
 
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
@@ -59,31 +109,29 @@ def delete_nube_products(prods_to_delete='all'):
 
     # borrar una lista de productos de la tienda
     odoo_prod_obj = odoo.env['product.product']
-    for default_code in prods_to_delete:
-        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
-        for prod in odoo_prod_obj.browse(ids):
-            tn.delete(prod)
+    for pro in odoo_prod_obj.browse(prods_to_delete):
+        tn.delete(pro)
 
 
-def set_weight(prods_to_update, weight):
+def set_weight(prods_to_update, weight=0.1):
+    """ Revisa todos los productos de odoo y si no tiene peso le pone 100g
+    """
     odoo_prod_obj = odoo.env['product.product']
-    for default_code in prods_to_update:
-        ids = odoo_prod_obj.search([('default_code', '=', default_code)])
-        for pro in odoo_prod_obj.browse(ids):
-            print 'setting weight', pro.default_code, '>', weight
+    for pro in odoo_prod_obj.browse(prods_to_update):
+        if pro.weight < weight:
             pro.weight = weight
+            print 'setting weight', pro.default_code, '>', weight
 
 
 def products_odoo2nube(prods_to_update):
     """ Esto actualiza los productos de la tienda desde odoo
     """
-    # obtener productos
     tn = TiendaNubeProd()
     odoo_prod_obj = odoo.env['product.product']
     count = len(prods_to_update)
     for pro in odoo_prod_obj.browse(prods_to_update):
         tn.update(pro)
-        count -=1
+        count -= 1
         print 'quedan ', count
 
 
@@ -98,15 +146,19 @@ def clean_odoo_prod(prods_to_update, nube_id=0):
 
 
 def list_nube_images():
+    """ Esto lista las imagenes que estan en la tienda, solo como muestras
+    """
     tn = TiendaNube()
     for prod in tn.store().products.list():
         if prod.images:
             print prod.id
             for image in prod.images:
-                print image
+                print image.position, image.src
 
 
 def list_odoo_categs():
+    """ Lista las categorias nube que hay en odoo
+    """
     odoo_categ_obj = odoo.env['curso.woo.categ']
     for level in range(1, 4):
         print '=== processing level', level
@@ -131,35 +183,6 @@ def update_nube_categs():
             tn.update(odoo_cat)
 
 
-def delete_nube_categs():
-    """ puede que ande pero da errores
-    """
-    tn = TiendaNube()
-    cant = 1
-    while cant > 0:
-        for cat in tn.store().categories.list():
-            tn.store().categories.delete({'id': cat.id})
-        cant = len(tn.store().categories.list())
-
-
-def clean_odoo_categs():
-    """ borrar las referencias de odoo para las categorias """
-    odoo_categ_obj = odoo.env['curso.woo.categ']
-    ids = odoo_categ_obj.search([('nube_id', '!=', 0)])
-    print ids
-    categs = odoo_categ_obj.browse(ids)
-    for cat in categs:
-        print cat.name
-        cat.nube_id = 0
-
-
-def clean_odoo_things():
-    """ borrar las referencias de odoo para cargar todo de nuevo """
-    print 'clean odoo things'
-    clean_odoo_prods()
-    clean_odoo_categs()
-
-
 def calculate_pricelist_price(id_prod, id_pricelist):
     return \
         odoo.env['product.pricelist'].price_get([id_pricelist], id_prod, 1.0)[
@@ -167,44 +190,9 @@ def calculate_pricelist_price(id_prod, id_pricelist):
 
 
 def list_odoo_prods(prods_to_list):
-    # obtener productos
     odoo_prod_obj = odoo.env['product.product']
-    for id in prods_to_list:
-        for pro in odoo_prod_obj.browse(id):
-            print pro.id, pro.name
-
-
-def odoo_published(from_date=False, categs=[], mask=False):
-    """ Devuelve los productos que se pueden publicar y que fueron modificaos
-        despues de from_date o todos si es False
-    """
-    # TODO agregar el write_date
-    print 'buscando productos en odoo para publicar'
-    ret = []
-    odoo_prod_obj = odoo.env['product.product']
-    domain = [
-        ('published', '=', True),
-        ('woo_categ', '!=', False),
-        ('description', '!=', False),
-        ('state', '=', 'sellable')
-    ]
-
-    if categs:
-        domain += ('categ_id', 'in', categs)
-
-    if from_date:
-        domain += [('write_date', '>', from_date)]
-
-    if mask:
-        domain += [('default_code', 'like', mask)]
-
-    ids = odoo_prod_obj.search(domain, order='write_date')
-
-    for pro in odoo_prod_obj.browse(ids):
-        print u'> {:10} {} {}'.format(pro.id, pro.write_date, pro.name)
-        ret.append(pro.id)
-    print 'total productos', len(ids)
-    return ret
+    for pro in odoo_prod_obj.browse(prods_to_list):
+        print pro.id, pro.name
 
 
 def delete_empty_categs(selected_prods):
@@ -236,8 +224,42 @@ def delete_empty_categs(selected_prods):
         tn.store().categories.delete({'id': id_cat})
 
 
+def odoo_to_delete():
+    """ Devuelve lista de productos que habria que borrar de la tienda porque
+        en odoo dice que no hay que publicarlos
+    """
+    print 'buscando productos en odoo para borrar'
+    ret = []
+    odoo_prod_obj = odoo.env['product.product']
+    domain = [
+        ('nube_id', '!=', 0),
+        ('published', '=', True),
+        ('woo_categ', '!=', False),
+        ('state', '=', 'obsolete')
+    ]
+
+    ids = odoo_prod_obj.search(domain, order='write_date')
+
+    for pro in odoo_prod_obj.browse(ids):
+        print u'> {:10} {} {:8} {}'.format(pro.id, pro.write_date,
+                                           pro.default_code, pro.name)
+        ret.append(pro.id)
+    print 'total productos', len(ids)
+    return ret
+
+
+def cross_check():
+    """ Verificar que cada producto que esta en la nube tiene un producto en odoo
+    """
+
+    # Bajar los id nube a una lista
+    nube_prods = list_nube_products()
+    print len(nube_prods)
+
+
+# delete_nube_products(odoo_to_delete())
 # sube todas las categorias a nube va antes de los productos
-#update_nube_categs()
+# update_nube_categs()
 
 # sube / actualiza todos los productos a nube
 # products_odoo2nube(odoo_published())
@@ -251,14 +273,12 @@ def delete_empty_categs(selected_prods):
 # list_nube_products()
 # list_nube_images()
 
-# products_odoo2nube(['2011P-S02'])
-
-# fotos = ['ESPONJA', 'C23', 'C22']
-
 # list_odoo_prods(fotos1)
 # delete_nube_products()
 
-# products_odoo2nube(fotos1)
+#products_odoo2nube(odoo_published(mask='1000-01'))
+
+
 
 
 # ultima publicacion
@@ -268,9 +288,11 @@ def delete_empty_categs(selected_prods):
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-08-06 06:54:35')
+# odoo_published('2018-08-07 01:57:30')
 
 
-#products_odoo2nube(odoo_published('2018-08-06 04:17:48'))
+# products_odoo2nube(odoo_published('2018-08-06 06:54:35'))
 
-odoo_published('2018-08-06 06:50:35')
+# COSAS A MODIFICAR
+# Hacer un chequeo de productos duplicados
+# bajar las imagenes de tienda a odoo

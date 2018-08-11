@@ -41,7 +41,7 @@ class MapProduct(Map):
             n.name('es', odoo_product.name)
         n.description('es', odoo_product.description)
         n.sku(odoo_product.default_code)
-        n.categories([odoo_product.woo_categ.nube_id])
+        n.categories(odoo_product.get_woo_categs())
 
         # si estoy haciendo actualizacion pongo el id
         if odoo_product.nube_id:
