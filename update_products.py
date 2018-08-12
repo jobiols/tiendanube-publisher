@@ -56,19 +56,37 @@ def odoo_published(from_date=False, categs=[], mask=False):
     ids = odoo_prod_obj.search(domain, order='write_date')
 
     for pro in odoo_prod_obj.browse(ids):
-        print u'> {:7} [{}] {} {}'.format(pro.id, pro.write_date, pro.default_code, pro.name)
+        print u'> {:7} [{}] {} {}'.format(pro.id, pro.write_date,
+                                          pro.default_code, pro.name)
         ret.append(pro.id)
     print 'total productos', len(ids)
     return ret
 
 
 def list_nube_categs():
-    """ Lista las categorias que hay en tienda nube
+    """ Lista las categorias que hay en tienda nube,
+        ojo que per page debe ser menor que la cantidad real de items que hay
     """
     tn = TiendaNube()
-    for cat in tn.store().categories.list():
-        print u'[{}] [{:7}] {} {}'.format(cat.id, cat.parent, cat.name.es,
-                                          cat.subcategories)
+    page = 1
+    total = 0
+    ret = []
+    while True:
+        print 'getting page', page
+        categs = tn.store().categories.list(
+            filters={'per_page': 200, 'page': page},
+            fields='id,parent,name,subcategories')
+        page += 1
+        for cat in categs:
+            ret.append(cat.id)
+            print u'[{}] [{:7}] {} {}'.format(cat.id, cat.parent, cat.name.es,
+                                              cat.subcategories)
+            total += 1
+        if len(categs) < 200:
+            break
+
+    print 'total', total
+    return ret
 
 
 def list_nube_products():
@@ -93,6 +111,7 @@ def list_nube_products():
         if len(prods) < 200:
             break
     return ret
+
 
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
@@ -248,14 +267,48 @@ def odoo_to_delete():
     return ret
 
 
-def cross_check():
+def cross_check_prods():
     """ Verificar que cada producto que esta en la nube tiene un producto en odoo
     """
-
     # Bajar los id nube a una lista
     nube_prods = list_nube_products()
-    print len(nube_prods)
+    print 'total prods in nube', len(nube_prods)
 
+    odoo_prod_obj = odoo.env['product.product']
+    for nube_id in nube_prods:
+        ids = odoo_prod_obj.search([('nube_id', '=', nube_id)])
+        print 'checking product', nube_id,
+        if not ids:
+            print 'not in odoo'
+        else:
+            if len(ids) == 1:
+                print 'ok'
+            else:
+                print 'duplicated'
+
+
+cross_check_prods()
+
+
+def cross_check_categs():
+    """ Verificar que cada categoria que esta en la nube tiene una categoria
+        en odoo
+    """
+    # Bajar los id nube a una lista
+    nube_categs = list_nube_categs()
+    print 'total categs in nube', len(nube_categs)
+
+    odoo_woo_categ = odoo.env['curso.woo.categ']
+    for nube_id in nube_categs:
+        print 'checking', nube_id,
+        woo_categ = odoo_woo_categ.search([('nube_id', '=', nube_id)])
+        if not woo_categ:
+            print 'not in odoo'
+        else:
+            if len(woo_categ) ==1:
+                print 'ok'
+            else:
+                print 'duplicated'
 
 # delete_nube_products(odoo_to_delete())
 # sube todas las categorias a nube va antes de los productos
@@ -276,11 +329,6 @@ def cross_check():
 # list_odoo_prods(fotos1)
 # delete_nube_products()
 
-#products_odoo2nube(odoo_published(mask='1000-01'))
-
-
-
-
 # ultima publicacion
 
 # esto limpia el id_nube de odoo, o si se le pone un id se lo actualiza, lo
@@ -288,8 +336,8 @@ def cross_check():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-#odoo_published('2018-08-12 03:37:40')
-products_odoo2nube(odoo_published('2018-08-07 01:57:30'))
+# odoo_published('2018-08-12 03:37:40')
+# products_odoo2nube(odoo_published('2018-08-07 01:57:30'))
 
 # COSAS A MODIFICAR
 # Hacer un chequeo de productos duplicados
