@@ -39,7 +39,7 @@ def odoo_published(from_date=False, categs=[], mask=False):
     odoo_prod_obj = odoo.env['product.product']
     domain = [
         ('published', '=', True),
-        ('woo_categ', '!=', False),
+        ('woo_categ_ids', '!=', False),
         ('description', '!=', False),
         ('state', '=', 'sellable')
     ]
@@ -288,10 +288,8 @@ def cross_check():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-08-07 01:57:30')
-
-
-# products_odoo2nube(odoo_published('2018-08-06 06:54:35'))
+#odoo_published('2018-08-12 03:37:40')
+products_odoo2nube(odoo_published('2018-08-07 01:57:30'))
 
 # COSAS A MODIFICAR
 # Hacer un chequeo de productos duplicados
