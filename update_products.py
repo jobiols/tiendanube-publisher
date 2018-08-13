@@ -101,11 +101,13 @@ def list_nube_products():
     while True:
         prods = tn.store().products.list(
             filters={'per_page': 200, 'page': page},
-            fields='id,name')
+            fields='id,variants,name')
         page += 1
 
         for prod in prods:
-            ret.append(prod.id)
+            ret.append({'id': prod.id,
+                        'sku': prod.variants[0].sku,
+                        'name': prod.name})
             print prod.id, prod.name.es
 
         if len(prods) < 200:
@@ -275,19 +277,22 @@ def cross_check_prods():
     print 'total prods in nube', len(nube_prods)
 
     odoo_prod_obj = odoo.env['product.product']
-    for nube_id in nube_prods:
-        ids = odoo_prod_obj.search([('nube_id', '=', nube_id)])
-        print 'checking product', nube_id,
-        if not ids:
-            print 'not in odoo'
-        else:
-            if len(ids) == 1:
-                print 'ok'
-            else:
-                print 'duplicated'
+    for nube_prod in nube_prods:
+        ids = odoo_prod_obj.search([('nube_id', '=', nube_prod['id'])])
+        if len(ids) > 1:
+            print 'multi id in odoo', ids
+            print nube_prod
 
+        # comparar nombres y codigos
+        prod = odoo_prod_obj.browse(ids)
+        odc = prod.default_code if prod.default_code else ''
+        oname = odc + u' ' + prod.name if prod.name else ''
+        nname = nube_prod['name'].es
+        ndc = nube_prod['sku']
 
-cross_check_prods()
+        if not (oname == nname and odc == ndc):
+            print u'odoo {} {}'.format(odc, oname)
+            print u'nube {} {}'.format(ndc, nname)
 
 
 def cross_check_categs():
@@ -305,10 +310,11 @@ def cross_check_categs():
         if not woo_categ:
             print 'not in odoo'
         else:
-            if len(woo_categ) ==1:
+            if len(woo_categ) == 1:
                 print 'ok'
             else:
                 print 'duplicated'
+
 
 # delete_nube_products(odoo_to_delete())
 # sube todas las categorias a nube va antes de los productos
@@ -336,9 +342,19 @@ def cross_check_categs():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-08-12 03:37:40')
-# products_odoo2nube(odoo_published('2018-08-07 01:57:30'))
+# odoo_published('2018-08-13 14:34:48')
+
+# products_odoo2nube(odoo_published('2018-08-13 00:25:30'))
 
 # COSAS A MODIFICAR
 # Hacer un chequeo de productos duplicados
 # bajar las imagenes de tienda a odoo
+
+list_nube_products()
+
+#cross_check_prods()
+
+#products_odoo2nube(odoo_published('2018-08-13 05:57:23'))
+
+#products_odoo2nube(odoo_published(mask='S7 NOIR'))
+
