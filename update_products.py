@@ -283,17 +283,24 @@ def cross_check_prods():
             print 'multi id in odoo', ids
             print nube_prod
 
-        # comparar nombres y codigos
+        # comparar nombres y codigos, ignorar farmacia once
+
         prod = odoo_prod_obj.browse(ids)
         odc = prod.default_code if prod.default_code else ''
         oname = odc + u' ' + prod.name if prod.name else ''
         nname = nube_prod['name'].es
         ndc = nube_prod['sku']
 
-        if not (oname == nname and odc == ndc):
+        if prod.default_code and not (oname.strip() == nname.strip() and (
+                odc == ndc)):
             print u'odoo {} {}'.format(odc, oname)
             print u'nube {} {}'.format(ndc, nname)
 
+        # no esta en odoo
+        if not prod:
+            print u'not in odoo {} {} {}'.format(nube_prod['id'],
+                                                 nube_prod['sku'],
+                                                 nube_prod['name'].es)
 
 def cross_check_categs():
     """ Verificar que cada categoria que esta en la nube tiene una categoria
@@ -342,17 +349,17 @@ def cross_check_categs():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-08-13 14:34:48')
+# odoo_published('2018-08-17 00:37:25')
 
-# products_odoo2nube(odoo_published('2018-08-13 00:25:30'))
+#products_odoo2nube(odoo_published('2018-08-13 14:34:48'))
 
 # COSAS A MODIFICAR
 # Hacer un chequeo de productos duplicados
 # bajar las imagenes de tienda a odoo
 
-list_nube_products()
+#list_nube_products()
 
-#cross_check_prods()
+cross_check_prods()
 
 #products_odoo2nube(odoo_published('2018-08-13 05:57:23'))
 
