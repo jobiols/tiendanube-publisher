@@ -349,10 +349,11 @@ def cross_check_categs():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-09-02 06:23:32')
+# odoo_published('2018-09-03 17:27:18')
 
 #list_nube_products()
 
 #cross_check_prods()
 
-products_odoo2nube(odoo_published('2018-08-17 00:37:25'))
+#products_odoo2nube(odoo_published('2018-09-02 06:23:32'))
+
