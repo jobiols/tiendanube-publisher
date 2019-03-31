@@ -29,7 +29,7 @@ odoo.login(odoo_key['database'], odoo_key['username'], odoo_key['password'])
 CATEG_MILA = [3, 25, 26, 53]
 
 
-def odoo_published(from_date=False, categs=[], mask=False):
+def odoo_published(from_date=False, categs=[], mask=False, noweight=False):
     """ Devuelve los productos que se pueden procesar y que fueron modificaos
         despues de from_date o todos si es False o las categorias o mascara.
     """
@@ -52,6 +52,9 @@ def odoo_published(from_date=False, categs=[], mask=False):
 
     if mask:
         domain += [('default_code', 'like', mask)]
+
+    if noweight:
+        domain += [('weight', '=', False)]
 
     ids = odoo_prod_obj.search(domain, order='write_date')
 
@@ -277,15 +280,32 @@ def cross_check_prods():
     print 'total prods in nube', len(nube_prods)
 
     odoo_prod_obj = odoo.env['product.product']
+    # por cada uno de la lista chequear lo que hay en odoo
     for nube_prod in nube_prods:
         ids = odoo_prod_obj.search([('nube_id', '=', nube_prod['id'])])
-        if len(ids) > 1:
-            print 'multi id in odoo', ids
+
+        # verificar que el producto este en odoo y que haya uno solo
+        # si no lo hay es error catastrofico, termino.
+        if len(ids) != 1:
+            if not ids:
+                print 'el producto no esta en odoo'
+                print nube_prod
+            if len(ids) >1:
+                print 'el producto esta repetido varias veces en odoo'
+                print nube_prod
+            exit()
+
+        # me traigo el producto
+        prod = odoo_prod_obj.browse(ids)
+
+        # verificar que el producto en odoo debe ser publicado si no debe ser
+        # publicado es error catastrifico y termino
+        if not prod.published:
+            print 'no debe estar en tiendanube'
             print nube_prod
+            exit()
 
         # comparar nombres y codigos, ignorar farmacia once
-
-        prod = odoo_prod_obj.browse(ids)
         odc = prod.default_code if prod.default_code else ''
         oname = odc + u' ' + prod.name if prod.name else ''
         nname = nube_prod['name'].es
@@ -301,6 +321,7 @@ def cross_check_prods():
             print u'not in odoo {} {} {}'.format(nube_prod['id'],
                                                  nube_prod['sku'],
                                                  nube_prod['name'].es)
+
 
 def cross_check_categs():
     """ Verificar que cada categoria que esta en la nube tiene una categoria
@@ -342,18 +363,13 @@ def cross_check_categs():
 # list_odoo_prods(fotos1)
 # delete_nube_products()
 
-# ultima publicacion
-
 # esto limpia el id_nube de odoo, o si se le pone un id se lo actualiza, lo
 # usamos cuando se desincroniza el id entre ambos
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-# odoo_published('2018-10-03 04:38:19')
+#odoo_published('2019-02-22 20:45:03')
 
+#products_odoo2nube(odoo_published('2019-02-22 20:45:03'))
 
-products_odoo2nube(odoo_published('2018-09-03 17:27:18'))
-
-
-
-
+cross_check_prods()
