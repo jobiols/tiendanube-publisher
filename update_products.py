@@ -288,10 +288,10 @@ def cross_check_prods():
         # si no lo hay es error catastrofico, termino.
         if len(ids) != 1:
             if not ids:
-                print 'el producto no esta en odoo'
+                print 'el producto no esta en odoo TERMINANDO'
                 print nube_prod
             if len(ids) >1:
-                print 'el producto esta repetido varias veces en odoo'
+                print 'el producto esta repetido varias veces en odoo TERMINANDO'
                 print nube_prod
             exit()
 
@@ -303,7 +303,6 @@ def cross_check_prods():
         if not prod.published:
             print 'no debe estar en tiendanube'
             print nube_prod
-            exit()
 
         # comparar nombres y codigos, ignorar farmacia once
         odc = prod.default_code if prod.default_code else ''
@@ -368,10 +367,11 @@ def cross_check_categs():
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
 # next upload from this date
-#odoo_published('2019-03-31 05:03:15')
+#odoo_published('2019-05-03 12:44:49')
 
 
 #cross_check_prods()
 
-products_odoo2nube(odoo_published('2019-02-22 20:45:03'))
+#products_odoo2nube(odoo_published('2019-05-03 12:35:02'))
+
 
