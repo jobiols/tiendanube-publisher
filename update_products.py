@@ -45,7 +45,7 @@ def odoo_published(from_date=False, categs=[], mask=False, noweight=False):
     ]
 
     if categs:
-        domain += ('categ_id', 'in', categs)
+        domain += [('categ_id', 'in', categs)]
 
     if from_date:
         domain += [('write_date', '>', from_date)]
@@ -57,7 +57,7 @@ def odoo_published(from_date=False, categs=[], mask=False, noweight=False):
         domain += [('weight', '=', False)]
 
     ids = odoo_prod_obj.search(domain, order='write_date')
-
+    print 'recuperados',len(ids),'productos'
     for pro in odoo_prod_obj.browse(ids):
         print u'> {:7} [{}] {} {}'.format(pro.id, pro.write_date,
                                           pro.default_code, pro.name)
@@ -117,6 +117,15 @@ def list_nube_products():
             break
     return ret
 
+def list_nube_images():
+    """ Esto lista las imagenes que estan en la tienda, solo como muestras
+    """
+    tn = TiendaNube()
+    for prod in tn.store().products.list():
+        if prod.images:
+            print prod.id
+            for image in prod.images:
+                print image.position, image.src
 
 def delete_nube_products(prods_to_delete='all'):
     """ Elimina un producto de tiendanube, o todos si no le paso parametros
@@ -167,17 +176,6 @@ def clean_odoo_prod(prods_to_update, nube_id=0):
     for pro in prods:
         print 'limpiando ', pro.default_code, pro.name
         pro.nube_id = nube_id
-
-
-def list_nube_images():
-    """ Esto lista las imagenes que estan en la tienda, solo como muestras
-    """
-    tn = TiendaNube()
-    for prod in tn.store().products.list():
-        if prod.images:
-            print prod.id
-            for image in prod.images:
-                print image.position, image.src
 
 
 def list_odoo_categs():
@@ -284,6 +282,10 @@ def cross_check_prods():
     for nube_prod in nube_prods:
         ids = odoo_prod_obj.search([('nube_id', '=', nube_prod['id'])])
 
+        # si el producto es un curso no va a estar en odoo lo salteo
+        if nube_prod.get('sku') and nube_prod.get('sku').find('G01') > 0:
+            continue
+
         # verificar que el producto este en odoo y que haya uno solo
         # si no lo hay es error catastrofico, termino.
         if len(ids) != 1:
@@ -352,12 +354,12 @@ def cross_check_categs():
 
 # elimina las categorias que no tienen productos NO ANDA
 # delete_empty_categs(odoo_published())
-# set_weight(odoo_published(), 0.1)
+#set_weight(odoo_published(categs=CATEG_MILA, noweight=True), 0.1)
 
 # products_odoo2nube(odoo_published())
 
 # list_nube_products()
-# list_nube_images()
+#list_nube_images()
 
 # list_odoo_prods(fotos1)
 # delete_nube_products()
@@ -366,11 +368,11 @@ def cross_check_categs():
 # usamos cuando se desincroniza el id entre ambos
 # clean_odoo_prod(odoo_published(mask="FANTASTICO"),nube_id=25025573)
 
+# cross_check_prods()
+
 # next upload from this date
-#odoo_published('2019-05-04 00:04:06')
+#odoo_published('2019-10-11 02:51:38')
+products_odoo2nube(odoo_published('2019-10-08 19:28:57'))
 
-
-#cross_check_prods()
-
-#products_odoo2nube(odoo_published('2019-05-03 12:44:49'))
-
+#list_odoo_categs()
+#cross_check_prods(2019-10-11 02:51:38)
