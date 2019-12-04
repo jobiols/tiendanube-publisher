@@ -371,8 +371,8 @@ def cross_check_categs():
 # cross_check_prods()
 
 # next upload from this date
-#odoo_published('2019-10-11 02:51:38')
-products_odoo2nube(odoo_published('2019-10-08 19:28:57'))
+#odoo_published('2019-12-04 16:54:06')
+products_odoo2nube(odoo_published('2019-11-20 19:15:04'))
 
 #list_odoo_categs()
 #cross_check_prods(2019-10-11 02:51:38)
