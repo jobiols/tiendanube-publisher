@@ -26,7 +26,7 @@ from product import NubeVariant
 class TestNubeVariant(TestCase):
     def test_id(self):
         v = NubeVariant()
-        v.id_variant(123456)
+        v.variant_id(123456)
         self.assertDictEqual(v.get_dict(), {'id': 123456})
 
     def test_product_id(self):
@@ -45,8 +45,11 @@ class TestNubeVariant(TestCase):
         self.assertDictEqual(v.get_dict(), {'sku': '1000-01'})
 
     def test_values(self):
+        """ chequear que agrega los values pero no los duplica
+        """
         v = NubeVariant()
         v.values('es', 'mucho')
         v.values('es', 'grande')
         v.values('en', 'big')
-        self.assertDictEqual(v.get_dict(), {'values': [{'es': 'grande'}, {'en': 'big'}]})
+        self.assertDictEqual(v.get_dict(),
+                             {'values': [{'es': 'mucho'}, {'en': 'big'}]})

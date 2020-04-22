@@ -36,16 +36,16 @@ class TiendaNube(object):
         """
         if odoo_obj.nube_id:
             # tengo el id en odoo, es una modificacion
-            print 'update'
+            print('update')
             self._do_update(odoo_obj)
         else:
-            print 'add'
+            print('add')
             # no tengo el id en odoo, es un alta
             self._do_add(odoo_obj)
         return
 
     def delete(self, odoo_obj):
-        print '>>', odoo_obj.default_code
+        print('>>', odoo_obj.default_code)
         self._do_delete(odoo_obj)
 
     def store(self):
@@ -75,42 +75,42 @@ class TiendaNubeProd(TiendaNube):
 
     def _do_delete(self, odoo_obj):
         if odoo_obj.nube_id:
-            print u'delete product {}, id={}'.format(
-                    odoo_obj.default_code, odoo_obj.nube_id)
+            print(u'delete product {}, id={}'.format(
+                    odoo_obj.default_code, odoo_obj.nube_id))
             dict = {'id': odoo_obj.nube_id}
             odoo_obj.nube_id = False
             odoo_obj.published = False
-            print '-------------------'
-            print dict
-            print '-------------------'
+            print('-------------------')
+            print(dict)
+            print('-------------------')
             try:
                 return self._store.products.delete(dict)
             except:
-                print 'object {} not in tienda'.format(dict)
+                print('object {} not in tienda'.format(dict))
                 return
         else:
-            print u'objet {} not in nube'.format(odoo_obj.default_code)
+            print(u'objet {} not in nube'.format(odoo_obj.default_code))
 
     def _do_update(self, odoo_obj):
         """ Actualiza un producto de odoo a tienda nube
         """
         c = MapProduct(odoo_obj)
-        print u'-------- update product {}'.format(odoo_obj.default_code)
-        print c.get_formatted_dict()
-        print u'--------'
+        print(u'-------- update product {}'.format(odoo_obj.default_code))
+        print(c.get_formatted_dict())
+        print(u'--------')
         ret = self._store.products.update(c.get_dict())
 
         c = MapVariant(odoo_obj, variant_id=ret.variants[0].id)
-        print u'-------- update product {}'.format(odoo_obj.default_code)
-        print c.get_formatted_dict()
-        print u'--------'
+        print(u'-------- update product {}'.format(odoo_obj.default_code))
+        print(c.get_formatted_dict())
+        print(u'--------')
         nube_prod = self._store.products.get(ret.id)
         nube_prod.variants.update(c.get_dict())
 
         # NO QUEREMOS AGREGAR FOTOS EN UPDATE
         # agregar la foto, si es que la tiene el objeto
         #if odoo_obj.image:
-        #    print u'------ adding photo '
+        #    print(u'------ adding photo ')
         #    image = MapImage(odoo_obj)
         #    nube_prod.images.add(image.get_dict())
 
@@ -120,15 +120,15 @@ class TiendaNubeProd(TiendaNube):
 
         # agregar el producto
         c = MapProduct(odoo_obj)
-        print u'-------- adding product {}'.format(odoo_obj.default_code)
-        print c.get_formatted_dict()
-        print u'--------'
+        print(u'-------- adding product {}'.format(odoo_obj.default_code))
+        print(c.get_formatted_dict())
+        print(u'--------')
         nube_prod = self._store.products.add(c.get_dict())
         odoo_obj.nube_id = nube_prod.id
 
         # agregar la foto, si es que la tiene el objeto
         if odoo_obj.image:
-            print u'------ adding photo '
+            print(u'------ adding photo ')
             nube_prod = self._store.products.get(nube_prod.id)
             image = MapImage(odoo_obj)
             nube_prod.images.add(image.get_dict())

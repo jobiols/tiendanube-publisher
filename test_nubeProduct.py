@@ -48,27 +48,40 @@ class TestNubeProduct(TestCase):
         p.name('es', 'nombre')
         p.name('es', 'nombre nuevo')
         p.name('en', 'my name')
-        self.assertDictEqual(p.get_dict(), {'name': {'en': 'my name', 'es': 'nombre nuevo'}})
+        self.assertDictEqual(
+            p.get_dict(),
+            {'name': {'en': 'my name', 'es': 'nombre nuevo'}})
 
     def test_add_description(self):
         p = NubeProduct()
         p.description('es', 'nombre')
         p.description('es', 'nombre nuevo')
         p.description('en', 'my name')
-        self.assertDictEqual(p.get_dict(), {'description': {'en': 'my name', 'es': 'nombre nuevo'}})
+        self.assertDictEqual(
+            p.get_dict(),
+            {'description':
+                 {'en': '<div align="justify">my name</div>',
+                  'es': '<div align="justify">nombre nuevo</div>'}
+             }
+        )
 
     def test_add_handle(self):
         p = NubeProduct()
         p.handle('es', u'sombra-compacta')
         p.handle('es', u'sombra-compacta-repuesto')
         p.handle('en', u'shadow-pack-repuesto')
-        self.assertDictEqual(p.get_dict(),
-                             {'handle': {'es': u'sombra-compacta-repuesto', 'en': u'shadow-pack-repuesto'}})
+        self.assertDictEqual(
+            p.get_dict(),
+            {'handle':
+                 {'es': u'sombra-compacta-repuesto',
+                  'en': u'shadow-pack-repuesto'}})
 
     def test_add_attributes(self):
         p = NubeProduct()
         p.attributes('es', u'Tamaño')
-        self.assertDictEqual(p.get_dict(), {'attributes': {'es': u'Tamaño'}})
+        self.assertDictEqual(
+            p.get_dict(),
+            {'attributes': [{'es': 'Tamaño'}]})
 
     def test_add_published(self):
         p = NubeProduct()
@@ -88,16 +101,19 @@ class TestNubeProduct(TestCase):
     def test_add_seo_title(self):
         p = NubeProduct()
         p.seo_title('es', u'Esto mejora el seo')
-        self.assertDictEqual(p.get_dict(), {'seo_title': {'es': u'Esto mejora el seo'}})
+        self.assertDictEqual(
+            p.get_dict(), {'seo_title': {'es': u'Esto mejora el seo'}})
 
     def test_add_seo_description(self):
         p = NubeProduct()
         p.seo_description('es', u'Esto mejora el seo expllicacion')
-        self.assertDictEqual(p.get_dict(), {'seo_description': {'es': u'Esto mejora el seo expllicacion'}})
+        self.assertDictEqual(
+            p.get_dict(),
+            {'seo_description': {'es': u'Esto mejora el seo expllicacion'}})
 
     def test_add_variants(self):
         p = NubeProduct()
-        p.variants([{},{}])
+        p.variants([{}, {}])
         self.assertDictEqual(p.get_dict(), {'variants': [{}, {}]})
 
     def test_add_tags(self):

@@ -71,7 +71,7 @@ class NubeCategory(NubeObject):
 
 class NubeVariant(NubeObject):
     def __init__(self):
-        super(NubeVariant, self).__init__()
+        super().__init__()
 
     def variant_id(self, value):
         self._p['id'] = value
@@ -115,8 +115,7 @@ class NubeVariant(NubeObject):
     def values(self, lang, values):
         self._check_list('values')
         for d in self._p['values']:
-            if lang == d.keys()[0]:
-                d[lang] = values
+            if lang in d.keys():
                 return
         self._p['values'].append({lang: values})
 
